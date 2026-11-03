@@ -8,25 +8,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
-        }
+        body { font-family: 'Inter', sans-serif; }
         .hidden { display: none !important; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
     <!-- Header / Navigation -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
-                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm">N</div>
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-600/20">N</div>
                 <div>
                     <h1 class="font-bold text-lg text-slate-900 leading-tight">NCKH Hub</h1>
                     <p class="text-xs text-slate-500">Cổng Kết Nối Nghiên Cứu Khoa Học</p>
@@ -44,9 +36,9 @@
 
             <!-- Right Actions & Auth Status -->
             <div class="flex items-center space-x-3">
-                <div id="cloud-status" class="hidden sm:flex items-center text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full font-medium">
-                    <span id="cloud-dot" class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span>
-                    <span id="cloud-text">Firebase Cloud</span>
+                <div id="cloud-status" class="hidden sm:flex items-center text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full font-medium">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span>
+                    <span>Firebase Cloud</span>
                 </div>
                 <div id="auth-status-container"></div>
             </div>
@@ -63,7 +55,7 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl text-sm font-medium flex items-center space-x-2">
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 hidden bg-indigo-600 text-white px-4 py-3 rounded-xl shadow-xl text-sm font-medium flex items-center space-x-2">
         <span id="toast-message">Thông báo</span>
     </div>
 
@@ -72,35 +64,35 @@
 
         <!-- TAB 1: TRANG CHỦ -->
         <section id="tab-home" class="space-y-8">
-            <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 rounded-2xl p-8 sm:p-12 text-white shadow-lg">
+            <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 rounded-2xl p-8 sm:p-12 text-white shadow-xl">
                 <div class="max-w-3xl">
                     <span class="bg-white/20 text-white text-xs font-semibold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Nền tảng NCKH Sinh viên</span>
                     <h2 class="text-3xl sm:text-5xl font-bold tracking-tight mt-5 mb-4 leading-tight">Nơi sinh viên kết nối nhóm và trình bày ý tưởng NCKH tới Giảng viên</h2>
                     <p class="text-indigo-100 text-base sm:text-lg mb-8 leading-relaxed">Tìm kiếm đồng đội cùng tần số, hoàn thiện hồ sơ đề tài và nhận sự hướng dẫn trực tiếp từ các giảng viên chuyên môn hàng đầu.</p>
                     <div class="flex flex-wrap gap-4">
-                        <button type="button" onclick="switchTab('matching')" class="bg-white text-indigo-700 hover:bg-indigo-50 px-6 py-3.5 rounded-xl font-semibold shadow-md transition cursor-pointer">Tìm đồng đội ngay</button>
-                        <button type="button" onclick="switchTab('proposals')" class="bg-indigo-500/40 hover:bg-indigo-500/60 text-white border border-indigo-300/60 px-6 py-3.5 rounded-xl font-semibold backdrop-blur-sm transition cursor-pointer">Gửi Đề xuất Đề tài</button>
+                        <button type="button" onclick="switchTab('matching')" class="bg-white hover:bg-slate-100 text-indigo-600 px-6 py-3.5 rounded-xl font-semibold shadow-md transition cursor-pointer">Tìm đồng đội ngay</button>
+                        <button type="button" onclick="switchTab('proposals')" class="bg-indigo-800/80 hover:bg-indigo-800 text-white border border-indigo-400 px-6 py-3.5 rounded-xl font-semibold transition cursor-pointer">Gửi Đề xuất Đề tài</button>
                     </div>
                 </div>
             </div>
 
             <!-- Thống kê nhanh -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4 cursor-pointer hover:border-indigo-300 transition" onclick="switchTab('matching')">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex items-center space-x-4 cursor-pointer hover:border-indigo-400 transition" onclick="switchTab('matching')">
                     <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 font-bold text-xl">👥</div>
                     <div>
                         <p class="text-sm font-medium text-slate-500">Nhóm đã kết nối</p>
                         <p class="text-2xl font-bold text-slate-900" id="stat-teams">0</p>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4 cursor-pointer hover:border-emerald-300 transition" onclick="switchTab('proposals')">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex items-center space-x-4 cursor-pointer hover:border-emerald-400 transition" onclick="switchTab('proposals')">
                     <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 font-bold text-xl">📝</div>
                     <div>
                         <p class="text-sm font-medium text-slate-500">Đề tài đã gửi giảng viên</p>
                         <p class="text-2xl font-bold text-slate-900" id="stat-proposals">0</p>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4 cursor-pointer hover:border-amber-300 transition" onclick="switchTab('mentors')">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex items-center space-x-4 cursor-pointer hover:border-amber-400 transition" onclick="switchTab('mentors')">
                     <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 font-bold text-xl">🎓</div>
                     <div>
                         <p class="text-sm font-medium text-slate-500">Giảng viên hướng dẫn</p>
@@ -110,12 +102,12 @@
             </div>
 
             <!-- BẢNG TIN CÔNG BỐ & BÀI VIẾT THAM KHẢO TRANG CHỦ -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 space-y-6 shadow-xs">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 pb-5">
                     <div>
                         <div class="flex items-center space-x-2">
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Bảng tin NCKH</span>
-                            <span class="text-xs text-slate-400">Cập nhật trực tuyến</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200">Bảng tin NCKH</span>
+                            <span class="text-xs text-slate-400">Cập nhật liên tục</span>
                         </div>
                         <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-2">Công bố Đề tài, Giải thưởng & Bài viết Tham khảo</h3>
                         <p class="text-sm text-slate-500 mt-1">Nơi công bố danh sách các đề tài được duyệt, vinh danh các nhóm đạt giải NCKH và chia sẻ kinh nghiệm nghiên cứu.</p>
@@ -135,7 +127,7 @@
 
             <!-- Hoạt động gần đây -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-bold text-lg text-slate-900">Nhóm đang tìm đồng đội</h3>
                         <button type="button" onclick="switchTab('matching')" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 cursor-pointer">Xem tất cả →</button>
@@ -143,7 +135,7 @@
                     <div id="home-matching-list" class="space-y-4"></div>
                 </div>
 
-                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-bold text-lg text-slate-900">Đề tài mới gửi giảng viên</h3>
                         <button type="button" onclick="switchTab('proposals')" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 cursor-pointer">Xem tất cả →</button>
@@ -155,12 +147,12 @@
 
         <!-- TAB 2: ĐỀ XUẤT ĐỀ TÀI -->
         <section id="tab-proposals" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-900">Đề xuất Đề tài NCKH</h2>
                     <p class="text-sm text-slate-500 mt-1">Danh sách ý tưởng đã sẵn sàng, gửi tới Giảng viên để xin nhận hướng dẫn.</p>
                 </div>
-                <button type="button" onclick="openProposalModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-sm transition cursor-pointer">
+                <button type="button" onclick="openProposalModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-xs transition cursor-pointer">
                     + Đăng ký Đề xuất Mới
                 </button>
             </div>
@@ -176,12 +168,12 @@
 
         <!-- TAB 3: TÌM ĐỒNG ĐỘI -->
         <section id="tab-matching" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-900">Tìm Đồng đội Nghiên cứu Khoa học</h2>
                     <p class="text-sm text-slate-500 mt-1">Tìm kiếm các mảnh ghép phù hợp hoặc tạo nhóm mới để cùng thực hiện đề tài.</p>
                 </div>
-                <button type="button" onclick="openMatchingModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-sm transition cursor-pointer">
+                <button type="button" onclick="openMatchingModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-xs transition cursor-pointer">
                     + Đăng tin Tìm Bạn
                 </button>
             </div>
@@ -191,7 +183,7 @@
 
         <!-- TAB 4: DANH BẠ GIẢNG VIÊN -->
         <section id="tab-mentors" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-900">Danh bạ Giảng viên Hướng dẫn</h2>
                     <p class="text-sm text-slate-500 mt-1">Thông tin chuyên ngành và chỉ tiêu nhận nhóm của các Giảng viên.</p>
@@ -204,7 +196,7 @@
 
         <!-- TAB 5: KHO TÀI LIỆU -->
         <section id="tab-resources" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
                 <div>
                     <h2 class="text-2xl font-bold text-slate-900">Kho Tài liệu & Biểu mẫu NCKH</h2>
                     <p class="text-sm text-slate-500 mt-1">Tải về biểu mẫu chuẩn và tham khảo các đề tài đạt giải các năm trước.</p>
@@ -222,14 +214,14 @@
 
         <!-- TAB 6: ADMIN PANEL -->
         <section id="tab-admin" class="hidden space-y-6">
-            <div class="bg-indigo-900 text-white p-6 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="bg-gradient-to-r from-indigo-700 to-violet-800 text-white p-6 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <span class="bg-indigo-700 text-indigo-200 text-xs px-3 py-1 rounded-full uppercase tracking-wider">Hệ thống Quản trị CLB</span>
+                    <span class="bg-indigo-900/60 text-indigo-100 border border-indigo-400/40 text-xs px-3 py-1 rounded-full uppercase tracking-wider">Hệ thống Quản trị CLB</span>
                     <h2 class="text-2xl font-bold mt-2">Bảng điều khiển Quản trị viên (Admin)</h2>
-                    <p class="text-indigo-200 text-sm mt-1">Đăng bài công bố trang chủ, quản lý giảng viên, kiểm duyệt đề tài và kho tài liệu.</p>
+                    <p class="text-indigo-100 text-sm mt-1">Đăng bài công bố trang chủ, quản lý giảng viên, kiểm duyệt đề tài và kho tài liệu.</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <button type="button" onclick="openHomePostModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition cursor-pointer">+ Đăng bài Trang chủ</button>
+                    <button type="button" onclick="openHomePostModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-xs transition cursor-pointer">+ Đăng bài Trang chủ</button>
                     <button type="button" onclick="switchTab('home')" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer">Về Trang chủ</button>
                 </div>
             </div>
@@ -241,7 +233,7 @@
                 <button type="button" onclick="setAdminSubTab('resources')" id="adm-tab-resources" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 cursor-pointer">Quản lý Kho tài liệu</button>
             </div>
 
-            <div id="admin-panel-content" class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm"></div>
+            <div id="admin-panel-content" class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs"></div>
         </section>
 
     </main>
@@ -252,16 +244,16 @@
     </footer>
 
     <!-- MODAL ĐĂNG BÀI VIẾT / CÔNG BỐ TRANG CHỦ -->
-    <div id="modal-home-post" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+    <div id="modal-home-post" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="text-xl font-bold text-slate-900">Đăng Bài Viết / Công Bố Lên Trang Chủ</h3>
                 <button type="button" onclick="closeHomePostModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">×</button>
             </div>
             <form onsubmit="handleHomePostSubmit(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Chuyên mục bài đăng</label>
-                    <select id="post-category-input" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <select id="post-category-input" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                         <option value="approved">✅ Công bố Đề tài được duyệt</option>
                         <option value="award">🏆 Vinh danh Nhóm đạt giải NCKH</option>
                         <option value="reference">📚 Bài viết / Tài liệu tham khảo</option>
@@ -269,32 +261,32 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Tiêu đề bài viết / Công bố</label>
-                    <input type="text" id="post-title-input" required placeholder="VD: Công bố danh sách 15 đề tài NCKH cấp Trường được duyệt đợt 1" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="post-title-input" required placeholder="VD: Công bố danh sách 15 đề tài NCKH..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Nhóm tác giả / Sinh viên / Đơn vị liên quan</label>
-                    <input type="text" id="post-highlight-input" placeholder="VD: Nhóm SV Khoa CNTT - GVHD: PGS.TS Nguyễn Văn An" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nhóm tác giả / Đơn vị liên quan</label>
+                    <input type="text" id="post-highlight-input" placeholder="VD: Nhóm SV Khoa CNTT - GVHD: PGS.TS Nguyễn Văn An" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Nội dung chi tiết</label>
-                    <textarea id="post-content-input" rows="4" required placeholder="Nhập nội dung thông báo, tóm tắt đề tài đạt giải hoặc hướng dẫn tham khảo..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                    <textarea id="post-content-input" rows="4" required placeholder="Nhập nội dung thông báo..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"></textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Link tài liệu / File đính kèm (Không bắt buộc)</label>
-                    <input type="url" id="post-link-input" placeholder="https://docs.google.com/..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Link tài liệu / File đính kèm</label>
+                    <input type="url" id="post-link-input" placeholder="https://docs.google.com/..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeHomePostModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Đăng lên Trang chủ</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-xs cursor-pointer">Đăng lên Trang chủ</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL XEM CHI TIẾT BÀI VIẾT -->
-    <div id="modal-view-post" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-start gap-4 border-b border-slate-200 pb-4">
+    <div id="modal-view-post" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start gap-4 border-b border-slate-100 pb-4">
                 <div>
                     <span id="view-post-badge" class="px-3 py-1 rounded-full text-xs font-semibold"></span>
                     <h3 id="view-post-title" class="text-xl sm:text-2xl font-bold text-slate-900 mt-3"></h3>
@@ -302,18 +294,18 @@
                 </div>
                 <button type="button" onclick="closeViewPostModal()" class="text-slate-400 hover:text-slate-600 text-2xl font-bold cursor-pointer">×</button>
             </div>
-            <div id="view-post-highlight-box" class="bg-indigo-50 border border-indigo-200 p-3.5 rounded-xl text-sm text-indigo-900 font-medium"></div>
+            <div id="view-post-highlight-box" class="bg-indigo-50 border border-indigo-100 p-3.5 rounded-xl text-sm text-indigo-800 font-medium"></div>
             <div id="view-post-content" class="text-sm sm:text-base text-slate-700 leading-relaxed whitespace-pre-line"></div>
-            <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+            <div class="flex justify-between items-center pt-4 border-t border-slate-100">
                 <div id="view-post-link-container"></div>
-                <button type="button" onclick="closeViewPostModal()" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl text-sm font-medium cursor-pointer">Đóng</button>
+                <button type="button" onclick="closeViewPostModal()" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium cursor-pointer">Đóng</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL ĐĂNG NHẬP -->
-    <div id="modal-login" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-6">
+    <!-- MODAL ĐĂNG NHẬP (ĐÃ LOẠI BỎ TOÀN BỘ GỢI Ý MẬT KHẨU) -->
+    <div id="modal-login" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6">
             <div class="flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900">Đăng nhập hệ thống</h3>
                 <button type="button" onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">×</button>
@@ -322,32 +314,27 @@
             <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Tài khoản / Email đăng nhập</label>
-                    <input type="text" id="login-username" required placeholder="Nhập tên tài khoản hoặc email (.edu.vn)" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                    <p class="text-xs text-slate-400 mt-1">Admin: <span class="font-mono text-slate-600 font-semibold">CLBSVNCKH</span></p>
+                    <input type="text" id="login-username" required placeholder="Nhập tên tài khoản hoặc email (.edu.vn)" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-sm font-medium text-slate-700">Mật khẩu</label>
                         <button type="button" onclick="openForgotModal()" class="text-xs text-indigo-600 hover:underline cursor-pointer">Quên mật khẩu?</button>
                     </div>
-                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                    <p class="text-xs text-slate-400 mt-1">Mật khẩu mặc định Admin: <span class="font-mono text-slate-600 font-semibold">svnckhtks2026</span></p>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div id="login-error" class="text-sm text-red-600 hidden"></div>
-                <div class="flex justify-between items-center pt-2">
-                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-lg font-medium cursor-pointer">⚡ Vào nhanh Admin</button>
-                    <div class="flex space-x-2">
-                        <button type="button" onclick="closeLoginModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
-                        <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Đăng nhập</button>
-                    </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeLoginModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-xs cursor-pointer">Đăng nhập</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL THÊM GIẢNG VIÊN -->
-    <div id="modal-add-mentor" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+    <div id="modal-add-mentor" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900">Thêm Giảng viên Hướng dẫn</h3>
                 <button type="button" onclick="closeAddMentorModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">×</button>
@@ -355,37 +342,37 @@
             <form onsubmit="handleAddMentorSubmit(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Học hàm / Học vị & Họ tên</label>
-                    <input type="text" id="mentor-name-input" required placeholder="VD: TS. Nguyễn Văn B" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="mentor-name-input" required placeholder="VD: TS. Nguyễn Văn B" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Email trường (.edu.vn)</label>
-                    <input type="email" id="mentor-email-input" required placeholder="VD: b.nv@edu.vn" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="email" id="mentor-email-input" required placeholder="VD: b.nv@edu.vn" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Khoa / Viện chuyên môn</label>
-                    <input type="text" id="mentor-dept-input" required placeholder="VD: Khoa Luật / Khoa CNTT" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="mentor-dept-input" required placeholder="VD: Khoa Luật / Khoa CNTT" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Chỉ tiêu (Số nhóm)</label>
-                        <input type="number" id="mentor-quota-input" value="3" min="1" max="20" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <input type="number" id="mentor-quota-input" value="3" min="1" max="20" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Mật khẩu cấp phát</label>
-                        <input type="text" id="mentor-pass-input" value="GV2026" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <input type="text" id="mentor-pass-input" value="GV2026" required class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeAddMentorModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Lưu Giảng viên</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-xs cursor-pointer">Lưu Giảng viên</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL THÊM TÀI LIỆU -->
-    <div id="modal-add-resource" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+    <div id="modal-add-resource" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900">Thêm Tài liệu / Đề tài mới</h3>
                 <button type="button" onclick="closeAddResourceModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">×</button>
@@ -393,40 +380,40 @@
             <form onsubmit="handleAddResourceSubmit(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Phân loại</label>
-                    <select id="res-type-input" onchange="toggleArchiveFields()" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <select id="res-type-input" onchange="toggleArchiveFields()" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                         <option value="template">Biểu mẫu Thuyết minh</option>
                         <option value="archive">Đề tài Đạt giải các năm trước</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Tiêu đề tài liệu / Tên đề tài</label>
-                    <input type="text" id="res-title-input" required placeholder="Nhập tên biểu mẫu hoặc đề tài..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="res-title-input" required placeholder="Nhập tên biểu mẫu hoặc đề tài..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div id="archive-extra-fields" class="space-y-4 hidden">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Tác giả & Giải thưởng</label>
-                        <input type="text" id="res-authors-input" placeholder="VD: Nhóm SV Khoa Luật (Giải Nhất cấp Trường)" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <input type="text" id="res-authors-input" placeholder="VD: Nhóm SV Khoa Luật (Giải Nhất cấp Trường)" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Năm đạt giải</label>
-                        <input type="text" id="res-year-input" value="2026" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <input type="text" id="res-year-input" value="2026" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Đường dẫn tải về (URL / Google Drive)</label>
-                    <input type="url" id="res-link-input" required value="https://docs.google.com/" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="url" id="res-link-input" required value="https://docs.google.com/" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeAddResourceModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Thêm vào Kho</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-xs cursor-pointer">Thêm vào Kho</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL QUÊN MẬT KHẨU -->
-    <div id="modal-forgot" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-6">
+    <div id="modal-forgot" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6">
             <div class="flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900">Khôi phục mật khẩu</h3>
                 <button type="button" onclick="closeForgotModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">×</button>
@@ -435,12 +422,12 @@
                 <p class="text-sm text-slate-600">Nhập email hoặc tên tài khoản của bạn để nhận mã xác nhận khôi phục mật khẩu.</p>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Email / Tên tài khoản</label>
-                    <input type="text" id="forgot-email" placeholder="VD: CLBSVNCKH hoặc an.nv@edu.vn" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="forgot-email" placeholder="VD: an.nv@edu.vn" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div id="forgot-error-1" class="text-sm text-red-600 hidden"></div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeForgotModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
-                    <button type="button" onclick="sendOtpCode()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Gửi mã xác nhận</button>
+                    <button type="button" onclick="sendOtpCode()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-xs cursor-pointer">Gửi mã xác nhận</button>
                 </div>
             </div>
 
@@ -451,24 +438,24 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Nhập mã xác nhận (OTP)</label>
-                    <input type="text" id="forgot-otp" placeholder="Nhập 6 số OTP" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="forgot-otp" placeholder="Nhập 6 số OTP" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Mật khẩu mới</label>
-                    <input type="password" id="forgot-new-pass" placeholder="Nhập mật khẩu mới" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="password" id="forgot-new-pass" placeholder="Nhập mật khẩu mới" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div id="forgot-error-2" class="text-sm text-red-600 hidden"></div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeForgotModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
-                    <button type="button" onclick="verifyAndResetPassword()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Xác nhận đổi mật khẩu</button>
+                    <button type="button" onclick="verifyAndResetPassword()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-xs cursor-pointer">Xác nhận đổi mật khẩu</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- MODAL ĐĂNG ĐỀ XUẤT ĐỀ TÀI -->
-    <div id="modal-proposal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
+    <div id="modal-proposal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900">Đăng ký Đề xuất Đề tài Mới</h3>
                 <button type="button" onclick="closeProposalModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">×</button>
@@ -476,33 +463,33 @@
             <form id="proposal-form" onsubmit="handleProposalSubmit(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Tên đề tài</label>
-                    <input type="text" id="prop-title" required placeholder="VD: Nghiên cứu ứng dụng AI trong quản lý rác thải..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="prop-title" required placeholder="VD: Nghiên cứu ứng dụng AI..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Tóm tắt ý tưởng (Mục tiêu, phương pháp)</label>
-                    <textarea id="prop-summary" rows="3" required placeholder="Mô tả mục tiêu nghiên cứu và phương pháp thực hiện..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                    <textarea id="prop-summary" rows="3" required placeholder="Mô tả mục tiêu nghiên cứu..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"></textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Danh sách thành viên (Kèm Khoa / Niên khóa)</label>
-                    <input type="text" id="prop-members" required placeholder="VD: Nguyễn Văn A (CNTT - K18), Trần Thị B (QTKD - K19)" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="prop-members" required placeholder="VD: Nguyễn Văn A (CNTT - K18)" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Giảng viên mong muốn hướng dẫn (Nếu có)</label>
-                    <select id="prop-mentor" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <select id="prop-mentor" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                         <option value="">-- Chọn Giảng viên (Không bắt buộc) --</option>
                     </select>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeProposalModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Gửi Đề xuất</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-xs cursor-pointer">Gửi Đề xuất</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL ĐĂNG TIN TÌM ĐỒNG ĐỘI -->
-    <div id="modal-matching" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4">
+    <div id="modal-matching" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900">Đăng tin Tìm Đồng đội</h3>
                 <button type="button" onclick="closeMatchingModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">×</button>
@@ -510,27 +497,27 @@
             <form id="matching-form" onsubmit="handleMatchingSubmit(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Chủ đề / Ý tưởng sơ bộ</label>
-                    <input type="text" id="match-topic" required placeholder="VD: Xây dựng ứng dụng học ngoại ngữ thông minh..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="match-topic" required placeholder="VD: Xây dựng ứng dụng..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Nội dung tuyển dụng thành viên</label>
-                    <textarea id="match-content" rows="3" required placeholder="VD: Mình đã có 2 bạn làm ý tưởng và báo cáo, cần tuyển thêm 1 bạn làm phần mềm/lập trình..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                    <textarea id="match-content" rows="3" required placeholder="Cần tuyển thêm thành viên..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"></textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Thông tin liên hệ (Zalo / Facebook / SĐT)</label>
-                    <input type="text" id="match-contact" required placeholder="VD: Zalo: 0912345678 hoặc fb.com/nhomnc" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <input type="text" id="match-contact" required placeholder="VD: Zalo: 0912345678" class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden">
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" onclick="closeMatchingModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Đăng Tin</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-xs cursor-pointer">Đăng Tin</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- MODAL GỬI GÓP Ý GIẢNG VIÊN -->
-    <div id="modal-feedback" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+    <div id="modal-feedback" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-xl font-bold text-slate-900">Gửi Góp ý / Yêu cầu chỉnh sửa</h3>
                 <button type="button" onclick="closeFeedbackModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">×</button>
@@ -538,16 +525,35 @@
             <input type="hidden" id="feedback-proposal-id">
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Nội dung góp ý cho nhóm sinh viên</label>
-                <textarea id="feedback-content" rows="4" required placeholder="Nhập các điểm nhóm cần chỉnh sửa phương pháp hoặc bổ sung tài liệu..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                <textarea id="feedback-content" rows="4" required placeholder="Nhập các điểm nhóm cần chỉnh sửa..." class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"></textarea>
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeFeedbackModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
-                <button type="button" onclick="submitLecturerFeedback()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Gửi Góp ý</button>
+                <button type="button" onclick="submitLecturerFeedback()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium text-sm shadow-xs cursor-pointer">Gửi Góp ý</button>
             </div>
         </div>
     </div>
 
-    <!-- APPLICATION LOGIC -->
+    <!-- FIREBASE SDK & JAVASCRIPT LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCicQL7Iuo1b1cgFWvlNMuSL8Ng52jYycM",
+            authDomain: "nckh-d2798.firebaseapp.com",
+            projectId: "nckh-d2798",
+            storageBucket: "nckh-d2798.firebasestorage.app",
+            messagingSenderId: "511807636507",
+            appId: "1:511807636507:web:b107b2ec3d43c6014da4be",
+            measurementId: "G-RPNYT7GXEZ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        console.log("Firebase initialized successfully for project:", firebaseConfig.projectId);
+    </script>
+
     <script>
         let currentTab = 'home';
         let currentUser = JSON.parse(localStorage.getItem('nckh_current_user')) || null;
@@ -556,7 +562,7 @@
         let resourceSubTab = 'templates';
         let adminSubTab = 'posts';
 
-        window.stateHomePosts = JSON.parse(localStorage.getItem('nckh_home_posts')) || [
+        let stateHomePosts = JSON.parse(localStorage.getItem('nckh_home_posts')) || [
             {
                 id: 'hp1',
                 category: 'award',
@@ -586,13 +592,13 @@
             }
         ];
 
-        window.stateLecturers = JSON.parse(localStorage.getItem('nckh_lecturers')) || [
+        let stateLecturers = JSON.parse(localStorage.getItem('nckh_lecturers')) || [
             { id: 'l1', email: 'an.nv@edu.vn', name: 'PGS.TS Nguyễn Văn An', dept: 'Khoa Công nghệ Thông tin', maxQuota: 3, currentCount: 1 },
             { id: 'l2', email: 'minh.tt@edu.vn', name: 'TS. Trần Thị Minh', dept: 'Khoa Quản trị Kinh doanh', maxQuota: 2, currentCount: 2 },
             { id: 'l3', email: 'nam.lh@edu.vn', name: 'ThS. Lê Hoàng Nam', dept: 'Khoa Kỹ thuật Xây dựng', maxQuota: 3, currentCount: 0 }
         ];
 
-        window.stateProposals = JSON.parse(localStorage.getItem('nckh_proposals')) || [
+        let stateProposals = JSON.parse(localStorage.getItem('nckh_proposals')) || [
             {
                 id: 'p1',
                 title: 'Nghiên cứu ứng dụng trí tuệ nhân tạo dự báo luồng giao thông đô thị',
@@ -615,7 +621,7 @@
             }
         ];
 
-        window.stateMatching = JSON.parse(localStorage.getItem('nckh_matching')) || [
+        let stateMatching = JSON.parse(localStorage.getItem('nckh_matching')) || [
             {
                 id: 'm1',
                 topic: 'Ứng dụng mobile phát hiện thực phẩm bẩn bằng AI Vision',
@@ -625,17 +631,17 @@
             }
         ];
 
-        window.stateTemplates = JSON.parse(localStorage.getItem('nckh_templates')) || [
+        let stateTemplates = JSON.parse(localStorage.getItem('nckh_templates')) || [
             { id: 't1', title: 'Mẫu Thuyết minh Đề tài NCKH Sinh viên chuẩn (Cấp Trường)', type: 'Biểu mẫu', link: 'https://docs.google.com/document/d/example1' },
             { id: 't2', title: 'Mẫu Đề xuất Ý tưởng Ngắn gọn (Pitching Deck)', type: 'Biểu mẫu', link: 'https://docs.google.com/document/d/example2' }
         ];
 
-        window.stateArchive = JSON.parse(localStorage.getItem('nckh_archive')) || [
+        let stateArchive = JSON.parse(localStorage.getItem('nckh_archive')) || [
             { id: 'a1', title: 'Nghiên cứu các giải pháp tối ưu năng lượng tuabin gió trục đứng', authors: 'Nhóm sinh viên Khoa Cơ khí (Giải Nhất cấp Bộ 2025)', year: '2025', link: 'https://docs.google.com/document/d/archive1' },
             { id: 'a2', title: 'Ứng dụng Blockchain trong quản lý minh bạch quỹ từ thiện học sinh', authors: 'Nguyễn Văn A, Trần Thị B (Giải Nhì cấp Trường 2024)', year: '2024', link: 'https://docs.google.com/document/d/archive2' }
         ];
 
-        window.statePasswords = JSON.parse(localStorage.getItem('nckh_passwords')) || {
+        let statePasswords = JSON.parse(localStorage.getItem('nckh_passwords')) || {
             'CLBSVNCKH': 'svnckhtks2026',
             'an.nv@edu.vn': 'GV2026',
             'minh.tt@edu.vn': 'GV2026',
@@ -643,19 +649,14 @@
         };
 
         function saveState() {
-            localStorage.setItem('nckh_home_posts', JSON.stringify(window.stateHomePosts));
-            localStorage.setItem('nckh_lecturers', JSON.stringify(window.stateLecturers));
-            localStorage.setItem('nckh_proposals', JSON.stringify(window.stateProposals));
-            localStorage.setItem('nckh_matching', JSON.stringify(window.stateMatching));
-            localStorage.setItem('nckh_templates', JSON.stringify(window.stateTemplates));
-            localStorage.setItem('nckh_archive', JSON.stringify(window.stateArchive));
-            localStorage.setItem('nckh_passwords', JSON.stringify(window.statePasswords));
+            localStorage.setItem('nckh_home_posts', JSON.stringify(stateHomePosts));
+            localStorage.setItem('nckh_lecturers', JSON.stringify(stateLecturers));
+            localStorage.setItem('nckh_proposals', JSON.stringify(stateProposals));
+            localStorage.setItem('nckh_matching', JSON.stringify(stateMatching));
+            localStorage.setItem('nckh_templates', JSON.stringify(stateTemplates));
+            localStorage.setItem('nckh_archive', JSON.stringify(stateArchive));
+            localStorage.setItem('nckh_passwords', JSON.stringify(statePasswords));
             localStorage.setItem('nckh_current_user', JSON.stringify(currentUser));
-
-            // Tự động đồng bộ lên Firebase Firestore nếu đã kết nối
-            if (typeof window.syncToFirebaseCloud === 'function') {
-                window.syncToFirebaseCloud();
-            }
         }
 
         function showToast(msg) {
@@ -702,9 +703,9 @@
         }
 
         function renderStats() {
-            document.getElementById('stat-teams').innerText = window.stateMatching.length + window.stateProposals.length;
-            document.getElementById('stat-proposals').innerText = window.stateProposals.length;
-            document.getElementById('stat-mentors').innerText = window.stateLecturers.length;
+            document.getElementById('stat-teams').innerText = stateMatching.length + stateProposals.length;
+            document.getElementById('stat-proposals').innerText = stateProposals.length;
+            document.getElementById('stat-mentors').innerText = stateLecturers.length;
         }
 
         function getCategoryMeta(cat) {
@@ -727,14 +728,14 @@
         function renderHomePosts() {
             const adminBtnContainer = document.getElementById('home-admin-post-action');
             if (currentUser && currentUser.role === 'admin') {
-                adminBtnContainer.innerHTML = `<button type="button" onclick="openHomePostModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm transition cursor-pointer">+ Đăng bài Công bố / Tham khảo</button>`;
+                adminBtnContainer.innerHTML = `<button type="button" onclick="openHomePostModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition cursor-pointer">+ Đăng bài Công bố / Tham khảo</button>`;
             } else {
                 adminBtnContainer.innerHTML = '';
             }
 
             const grid = document.getElementById('home-posts-grid');
-            let filtered = window.stateHomePosts;
-            if (postFilter !== 'all') filtered = window.stateHomePosts.filter(p => p.category === postFilter);
+            let filtered = stateHomePosts;
+            if (postFilter !== 'all') filtered = stateHomePosts.filter(p => p.category === postFilter);
 
             if (filtered.length === 0) {
                 grid.innerHTML = `<div class="col-span-3 py-8 text-center text-slate-400 text-sm">Chưa có bài đăng nào trong chuyên mục này.</div>`;
@@ -745,7 +746,7 @@
                 const meta = getCategoryMeta(post.category);
                 const isAdmin = currentUser && currentUser.role === 'admin';
                 return `
-                    <div class="bg-slate-50 border border-slate-200 hover:border-indigo-300 rounded-2xl p-5 flex flex-col justify-between space-y-4 transition group">
+                    <div class="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-xs transition group">
                         <div class="space-y-3">
                             <div class="flex justify-between items-center gap-2">
                                 <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${meta.badgeClass}">${meta.label}</span>
@@ -755,11 +756,11 @@
                             ${post.highlight ? `<p class="text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg">${post.highlight}</p>` : ''}
                             <p class="text-xs text-slate-600 leading-relaxed line-clamp-3">${post.content}</p>
                         </div>
-                        <div class="flex items-center justify-between pt-3 border-t border-slate-200">
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-100">
                             <button type="button" onclick="openViewPostModal('${post.id}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 cursor-pointer">Đọc chi tiết →</button>
                             <div class="flex items-center space-x-2">
-                                ${post.link ? `<a href="${post.link}" target="_blank" class="text-xs bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 py-1 rounded-lg">📎 Tài liệu</a>` : ''}
-                                ${isAdmin ? `<button type="button" onclick="deleteHomePost('${post.id}')" class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2.5 py-1 rounded-lg cursor-pointer">🗑 Xóa</button>` : ''}
+                                ${post.link ? `<a href="${post.link}" target="_blank" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg">📎 Tài liệu</a>` : ''}
+                                ${isAdmin ? `<button type="button" onclick="deleteHomePost('${post.id}')" class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2.5 py-1 rounded-lg cursor-pointer font-medium">🗑 Xóa</button>` : ''}
                             </div>
                         </div>
                     </div>
@@ -787,7 +788,7 @@
             const link = document.getElementById('post-link-input').value.trim();
             const today = new Date().toLocaleDateString('vi-VN');
 
-            window.stateHomePosts.unshift({ id: 'hp_' + Date.now(), category, title, highlight, content, date: today, link });
+            stateHomePosts.unshift({ id: 'hp_' + Date.now(), category, title, highlight, content, date: today, link });
             saveState();
             closeHomePostModal();
             renderAll();
@@ -795,14 +796,14 @@
         }
 
         function deleteHomePost(id) {
-            window.stateHomePosts = window.stateHomePosts.filter(p => p.id !== id);
+            stateHomePosts = stateHomePosts.filter(p => p.id !== id);
             saveState();
             renderAll();
             showToast('Đã xóa bài viết.');
         }
 
         function openViewPostModal(id) {
-            const post = window.stateHomePosts.find(p => p.id === id);
+            const post = stateHomePosts.find(p => p.id === id);
             if (!post) return;
             const meta = getCategoryMeta(post.category);
             const badgeEl = document.getElementById('view-post-badge');
@@ -822,7 +823,7 @@
         function closeViewPostModal() { document.getElementById('modal-view-post').classList.add('hidden'); }
 
         function announceProposalToHome(propId) {
-            const p = window.stateProposals.find(item => item.id === propId);
+            const p = stateProposals.find(item => item.id === propId);
             if (!p) return;
             openHomePostModal();
             document.getElementById('post-category-input').value = 'approved';
@@ -833,11 +834,11 @@
 
         function renderHomeLists() {
             const hmList = document.getElementById('home-matching-list');
-            hmList.innerHTML = window.stateMatching.length === 0 ? `<p class="text-sm text-slate-400 text-center py-4">Chưa có bài đăng tìm đồng đội nào.</p>` : window.stateMatching.slice(0, 3).map(m => `
-                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+            hmList.innerHTML = stateMatching.length === 0 ? `<p class="text-sm text-slate-400 text-center py-4">Chưa có bài đăng tìm đồng đội nào.</p>` : stateMatching.slice(0, 3).map(m => `
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
                     <h4 class="font-semibold text-slate-900 text-sm">${m.topic}</h4>
                     <p class="text-xs text-slate-600">${m.content}</p>
-                    <div class="flex justify-between items-center text-xs text-slate-400 pt-1">
+                    <div class="flex justify-between items-center text-xs text-slate-500 pt-1">
                         <span>👤 ${m.author}</span>
                         <span class="font-medium text-indigo-600">📞 ${m.contact}</span>
                     </div>
@@ -845,14 +846,14 @@
             `).join('');
 
             const hpList = document.getElementById('home-proposals-list');
-            hpList.innerHTML = window.stateProposals.length === 0 ? `<p class="text-sm text-slate-400 text-center py-4">Chưa có đề tài nào được gửi.</p>` : window.stateProposals.slice(0, 3).map(p => `
-                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+            hpList.innerHTML = stateProposals.length === 0 ? `<p class="text-sm text-slate-400 text-center py-4">Chưa có đề tài nào được gửi.</p>` : stateProposals.slice(0, 3).map(p => `
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
                     <div class="flex justify-between items-start gap-2">
                         <h4 class="font-semibold text-slate-900 text-sm">${p.title}</h4>
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${p.status === 'accepted' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${p.status === 'accepted' ? '🟢 Đã có GV' : '🟡 Đang chờ'}</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${p.status === 'accepted' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${p.status === 'accepted' ? '🟢 Đã có GV' : '🟡 Đang chờ'}</span>
                     </div>
                     <p class="text-xs text-slate-600">${p.summary}</p>
-                    <p class="text-xs text-slate-400">GVHD: ${p.mentorName || 'Chưa nhận'}</p>
+                    <p class="text-xs text-slate-500">GVHD: ${p.mentorName || 'Chưa nhận'}</p>
                 </div>
             `).join('');
         }
@@ -868,12 +869,12 @@
 
         function renderProposals() {
             const container = document.getElementById('proposals-container');
-            let filtered = window.stateProposals;
-            if (proposalFilter === 'pending') filtered = window.stateProposals.filter(p => p.status === 'pending');
-            if (proposalFilter === 'accepted') filtered = window.stateProposals.filter(p => p.status === 'accepted');
+            let filtered = stateProposals;
+            if (proposalFilter === 'pending') filtered = stateProposals.filter(p => p.status === 'pending');
+            if (proposalFilter === 'accepted') filtered = stateProposals.filter(p => p.status === 'accepted');
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-400">Không có đề xuất đề tài nào.</div>`;
+                container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500">Không có đề xuất đề tài nào.</div>`;
                 return;
             }
 
@@ -881,14 +882,14 @@
                 const isAccepted = p.status === 'accepted';
                 let actionHtml = '';
                 if (currentUser && currentUser.role === 'lecturer') {
-                    if (!isAccepted) actionHtml = `<button type="button" onclick="acceptProposal('${p.id}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium shadow-sm transition cursor-pointer">✅ Nhận hướng dẫn</button>`;
-                    else if (p.mentorEmail === currentUser.email) actionHtml = `<button type="button" onclick="openFeedbackModal('${p.id}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium shadow-sm transition cursor-pointer">💬 Gửi góp ý</button>`;
+                    if (!isAccepted) actionHtml = `<button type="button" onclick="acceptProposal('${p.id}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">✅ Nhận hướng dẫn</button>`;
+                    else if (p.mentorEmail === currentUser.email) actionHtml = `<button type="button" onclick="openFeedbackModal('${p.id}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">💬 Gửi góp ý</button>`;
                 }
                 let announceBtn = (currentUser && currentUser.role === 'admin') ? `<button type="button" onclick="announceProposalToHome('${p.id}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 rounded-lg text-xs font-semibold transition cursor-pointer">📢 Công bố Trang chủ</button>` : '';
                 let deleteBtn = `<button type="button" onclick="deleteProposal('${p.id}')" class="px-3 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-lg text-xs font-semibold transition cursor-pointer">🗑 Xóa</button>`;
 
                 return `
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <div>
                                 <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${isAccepted ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${isAccepted ? '🟢 Đã có Giảng viên hướng dẫn' : '🟡 Đang chờ Giảng viên nhận'}</span>
@@ -896,8 +897,8 @@
                             </div>
                             <div class="flex flex-wrap items-center gap-2">${actionHtml} ${announceBtn} ${deleteBtn}</div>
                         </div>
-                        <p class="text-sm text-slate-600 leading-relaxed"><strong class="text-slate-900">Tóm tắt:</strong> ${p.summary}</p>
-                        <div class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-100 gap-2">
+                        <p class="text-sm text-slate-600 leading-relaxed"><strong class="text-slate-800">Tóm tắt:</strong> ${p.summary}</p>
+                        <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100 gap-2">
                             <div>👥 <strong class="text-slate-700">Thành viên:</strong> ${p.members}</div>
                             <div>🎓 <strong class="text-slate-700">GVHD:</strong> ${p.mentorName || 'Chưa có'}</div>
                         </div>
@@ -909,8 +910,8 @@
 
         function renderMatching() {
             const container = document.getElementById('matching-container');
-            container.innerHTML = window.stateMatching.length === 0 ? `<div class="col-span-2 bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-400">Chưa có bài đăng tìm đồng đội nào.</div>` : window.stateMatching.map((m, idx) => `
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
+            container.innerHTML = stateMatching.length === 0 ? `<div class="col-span-2 bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500">Chưa có bài đăng tìm đồng đội nào.</div>` : stateMatching.map((m, idx) => `
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between space-y-4">
                     <div class="space-y-3">
                         <div class="flex justify-between items-start gap-2">
                             <h3 class="font-bold text-base text-slate-900">${m.topic}</h3>
@@ -919,10 +920,10 @@
                         <p class="text-sm text-slate-600 leading-relaxed">${m.content}</p>
                     </div>
                     <div class="space-y-3 pt-3 border-t border-slate-100">
-                        <div class="text-xs text-slate-400">👤 Đăng bởi: <strong class="text-slate-700">${m.author}</strong></div>
+                        <div class="text-xs text-slate-500">👤 Đăng bởi: <strong class="text-slate-700">${m.author}</strong></div>
                         <div class="flex flex-wrap items-center justify-between gap-2">
-                            <span class="text-xs font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">📞 ${m.contact}</span>
-                            <button type="button" onclick="promoteToProposalByIndex(${idx})" class="text-xs bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">⚡ Tạo Đề xuất</button>
+                            <span class="text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">📞 ${m.contact}</span>
+                            <button type="button" onclick="promoteToProposalByIndex(${idx})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">⚡ Tạo Đề xuất</button>
                         </div>
                     </div>
                 </div>
@@ -931,18 +932,18 @@
 
         function renderMentors() {
             const container = document.getElementById('mentors-container');
-            document.getElementById('admin-mentor-action').innerHTML = `<button type="button" onclick="openAddMentorModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition cursor-pointer">+ Thêm Giảng viên</button>`;
-            container.innerHTML = window.stateLecturers.length === 0 ? `<div class="col-span-3 bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-400">Chưa có giảng viên nào.</div>` : window.stateLecturers.map(l => `
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            document.getElementById('admin-mentor-action').innerHTML = `<button type="button" onclick="openAddMentorModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">+ Thêm Giảng viên</button>`;
+            container.innerHTML = stateLecturers.length === 0 ? `<div class="col-span-3 bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500">Chưa có giảng viên nào.</div>` : stateLecturers.map(l => `
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
                     <div class="flex justify-between items-start gap-2">
                         <div>
                             <h3 class="font-bold text-lg text-slate-900">${l.name}</h3>
-                            <p class="text-xs text-slate-400 mt-0.5">${l.dept}</p>
+                            <p class="text-xs text-slate-500 mt-0.5">${l.dept}</p>
                         </div>
                         <button type="button" onclick="deleteLecturer('${l.id}', '${l.email}')" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0">🗑 Xóa</button>
                     </div>
-                    <div class="space-y-2 text-xs text-slate-500">
-                        <div>📧 Email: <span class="font-mono text-slate-700">${l.email}</span></div>
+                    <div class="space-y-2 text-xs text-slate-600">
+                        <div>📧 Email: <span class="font-mono text-slate-800">${l.email}</span></div>
                         <div class="flex justify-between items-center pt-2">
                             <span>Chỉ tiêu hướng dẫn:</span>
                             <span class="font-semibold text-indigo-600">${l.currentCount} / ${l.maxQuota} nhóm</span>
@@ -957,39 +958,39 @@
 
         function setResourceSubTab(sub) {
             resourceSubTab = sub;
-            document.getElementById('res-tab-templates').className = sub === 'templates' ? "font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer" : "font-semibold text-slate-400 hover:text-slate-600 pb-2 cursor-pointer";
-            document.getElementById('res-tab-archive').className = sub === 'archive' ? "font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer" : "font-semibold text-slate-400 hover:text-slate-600 pb-2 cursor-pointer";
+            document.getElementById('res-tab-templates').className = sub === 'templates' ? "font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer" : "font-semibold text-slate-500 hover:text-slate-800 pb-2 cursor-pointer";
+            document.getElementById('res-tab-archive').className = sub === 'archive' ? "font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer" : "font-semibold text-slate-500 hover:text-slate-800 pb-2 cursor-pointer";
             renderResources();
         }
 
         function renderResources() {
             const container = document.getElementById('resources-container');
-            document.getElementById('admin-resource-action').innerHTML = `<button type="button" onclick="openAddResourceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition cursor-pointer">+ Thêm Tài liệu</button>`;
+            document.getElementById('admin-resource-action').innerHTML = `<button type="button" onclick="openAddResourceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">+ Thêm Tài liệu</button>`;
             if (resourceSubTab === 'templates') {
-                container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">${window.stateTemplates.map(t => `
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center gap-4">
-                        <div><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">${t.type}</span><h4 class="font-bold text-base text-slate-900 mt-2">${t.title}</h4></div>
-                        <div class="flex items-center space-x-2 shrink-0"><a href="${t.link}" target="_blank" class="px-4 py-2 bg-indigo-600 text-white text-xs font-medium rounded-xl">Tải về</a><button type="button" onclick="deleteTemplate('${t.id}')" class="px-2.5 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button></div>
+                container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">${stateTemplates.map(t => `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex justify-between items-center gap-4">
+                        <div><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">${t.type}</span><h4 class="font-bold text-base text-slate-900 mt-2">${t.title}</h4></div>
+                        <div class="flex items-center space-x-2 shrink-0"><a href="${t.link}" target="_blank" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl">Tải về</a><button type="button" onclick="deleteTemplate('${t.id}')" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold">🗑 Xóa</button></div>
                     </div>
                 `).join('')}</div>`;
             } else {
-                container.innerHTML = `<div class="grid grid-cols-1 gap-4 mt-6">${window.stateArchive.map(a => `
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">Năm ${a.year}</span><h4 class="font-bold text-lg text-slate-900 mt-2">${a.title}</h4><p class="text-xs text-slate-400 mt-1">Tác giả: ${a.authors}</p></div>
-                        <div class="flex items-center space-x-2 shrink-0"><a href="${a.link}" target="_blank" class="px-4 py-2 bg-slate-900 text-white text-xs font-medium rounded-xl">Xem</a><button type="button" onclick="deleteArchive('${a.id}')" class="px-2.5 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button></div>
+                container.innerHTML = `<div class="grid grid-cols-1 gap-4 mt-6">${stateArchive.map(a => `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">Năm ${a.year}</span><h4 class="font-bold text-lg text-slate-900 mt-2">${a.title}</h4><p class="text-xs text-slate-500 mt-1">Tác giả: ${a.authors}</p></div>
+                        <div class="flex items-center space-x-2 shrink-0"><a href="${a.link}" target="_blank" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-xl">Xem</a><button type="button" onclick="deleteArchive('${a.id}')" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold">🗑 Xóa</button></div>
                     </div>
                 `).join('')}</div>`;
             }
         }
 
+        // ĐÃ BỎ NÚT "BẬT QUYỀN ADMIN"
         function renderHeaderAuth() {
             const container = document.getElementById('auth-status-container');
             if (!currentUser) {
                 container.innerHTML = `
-                    <div class="flex items-center space-x-2">
-                        <button type="button" onclick="quickAdminLogin()" class="px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-semibold rounded-lg transition cursor-pointer">⚡ Bật quyền Admin</button>
-                        <button type="button" onclick="openLoginModal()" class="inline-flex items-center px-4 py-2 border border-indigo-600 text-sm font-medium rounded-lg text-indigo-600 bg-white hover:bg-indigo-50 transition cursor-pointer">Đăng nhập</button>
-                    </div>
+                    <button type="button" onclick="openLoginModal()" class="inline-flex items-center px-4 py-2 border border-indigo-600 text-sm font-medium rounded-xl text-indigo-600 bg-white hover:bg-indigo-50 transition cursor-pointer shadow-2xs">
+                        Đăng nhập
+                    </button>
                 `;
             } else if (currentUser.role === 'admin') {
                 container.innerHTML = `
@@ -1004,25 +1005,40 @@
             }
         }
 
-        function openLoginModal() { document.getElementById('modal-login').classList.remove('hidden'); }
+        function openLoginModal() { 
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('modal-login').classList.remove('hidden'); 
+        }
         function closeLoginModal() { document.getElementById('modal-login').classList.add('hidden'); }
-        function quickAdminLogin() { currentUser = { role: 'admin', username: 'CLBSVNCKH' }; saveState(); closeLoginModal(); renderAll(); showToast('Đã bật quyền Admin!'); }
 
         function handleLoginSubmit(event) {
             event.preventDefault();
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value.trim();
             const errEl = document.getElementById('login-error');
-            if (username.toUpperCase() === 'CLBSVNCKH' && password === window.statePasswords['CLBSVNCKH']) {
+
+            if (username.toUpperCase() === 'CLBSVNCKH' && password === statePasswords['CLBSVNCKH']) {
                 currentUser = { role: 'admin', username: 'CLBSVNCKH' };
-                saveState(); closeLoginModal(); switchTab('admin'); showToast('Đăng nhập Admin thành công!'); return;
+                saveState(); 
+                closeLoginModal(); 
+                switchTab('admin'); 
+                showToast('Đăng nhập Admin thành công!'); 
+                return;
             }
-            const lecturer = window.stateLecturers.find(l => l.email.toLowerCase() === username.toLowerCase());
-            if (lecturer && window.statePasswords[lecturer.email] === password) {
+
+            const lecturer = stateLecturers.find(l => l.email.toLowerCase() === username.toLowerCase());
+            if (lecturer && statePasswords[lecturer.email] === password) {
                 currentUser = { role: 'lecturer', email: lecturer.email, name: lecturer.name };
-                saveState(); closeLoginModal(); switchTab('proposals'); showToast('Xin chào ' + lecturer.name); return;
+                saveState(); 
+                closeLoginModal(); 
+                switchTab('proposals'); 
+                showToast('Xin chào ' + lecturer.name); 
+                return;
             }
-            errEl.innerText = 'Tài khoản hoặc mật khẩu không chính xác!';
+
+            errEl.innerText = 'Tên tài khoản hoặc mật khẩu không chính xác!';
             errEl.classList.remove('hidden');
         }
 
@@ -1035,7 +1051,7 @@
             const val = document.getElementById('forgot-email').value.trim();
             const errEl = document.getElementById('forgot-error-1');
             const isAdm = val.toUpperCase() === 'CLBSVNCKH';
-            const lec = window.stateLecturers.find(l => l.email.toLowerCase() === val.toLowerCase());
+            const lec = stateLecturers.find(l => l.email.toLowerCase() === val.toLowerCase());
             if (!isAdm && !lec) { errEl.innerText = 'Không tìm thấy tài khoản!'; errEl.classList.remove('hidden'); return; }
             tempForgotUser = isAdm ? 'CLBSVNCKH' : lec.email;
             document.getElementById('forgot-step-1').classList.add('hidden');
@@ -1044,18 +1060,13 @@
         function verifyAndResetPassword() {
             const otp = document.getElementById('forgot-otp').value.trim();
             const newPass = document.getElementById('forgot-new-pass').value.trim();
-            const errEl = document.getElementById('forgot-error-2');
-            if (otp !== '888999') {
-                errEl.innerText = 'Mã OTP không đúng!';
-                errEl.classList.remove('hidden');
-                return;
-            }
-            window.statePasswords[tempForgotUser] = newPass;
+            if (otp !== '888999') { alert('OTP không đúng!'); return; }
+            statePasswords[tempForgotUser] = newPass;
             saveState(); closeForgotModal(); showToast('Đổi mật khẩu thành công!'); openLoginModal();
         }
 
         function openProposalModal() {
-            document.getElementById('prop-mentor').innerHTML = '<option value="">-- Chọn Giảng viên --</option>' + window.stateLecturers.map(l => `<option value="${l.email}">${l.name}</option>`).join('');
+            document.getElementById('prop-mentor').innerHTML = '<option value="">-- Chọn Giảng viên (Không bắt buộc) --</option>' + stateLecturers.map(l => `<option value="${l.email}">${l.name}</option>`).join('');
             document.getElementById('modal-proposal').classList.remove('hidden');
         }
         function closeProposalModal() { document.getElementById('modal-proposal').classList.add('hidden'); }
@@ -1067,15 +1078,15 @@
             const members = document.getElementById('prop-members').value.trim();
             const mentorEmail = document.getElementById('prop-mentor').value;
             let mentorName = '';
-            if (mentorEmail) { const lec = window.stateLecturers.find(l => l.email === mentorEmail); if (lec) { mentorName = lec.name; lec.currentCount++; } }
-            window.stateProposals.unshift({ id: 'p_' + Date.now(), title, summary, members, mentorEmail, mentorName, status: mentorEmail ? 'accepted' : 'pending', feedback: '' });
+            if (mentorEmail) { const lec = stateLecturers.find(l => l.email === mentorEmail); if (lec) { mentorName = lec.name; lec.currentCount++; } }
+            stateProposals.unshift({ id: 'p_' + Date.now(), title, summary, members, mentorEmail, mentorName, status: mentorEmail ? 'accepted' : 'pending', feedback: '' });
             saveState(); closeProposalModal(); switchTab('proposals'); showToast('Đã gửi đề xuất đề tài!');
         }
 
         function acceptProposal(id) {
-            const prop = window.stateProposals.find(p => p.id === id);
-            const lec = window.stateLecturers.find(l => l.email === currentUser.email);
-            if (lec.currentCount >= lec.maxQuota) { showToast('Đã đạt giới hạn chỉ tiêu hướng dẫn!'); return; }
+            const prop = stateProposals.find(p => p.id === id);
+            const lec = stateLecturers.find(l => l.email === currentUser.email);
+            if (lec.currentCount >= lec.maxQuota) { alert('Đã đạt giới hạn chỉ tiêu!'); return; }
             prop.status = 'accepted'; prop.mentorEmail = lec.email; prop.mentorName = lec.name; lec.currentCount++;
             saveState(); renderAll(); showToast('Đã nhận hướng dẫn!');
         }
@@ -1085,14 +1096,14 @@
         function submitLecturerFeedback() {
             const id = document.getElementById('feedback-proposal-id').value;
             const content = document.getElementById('feedback-content').value.trim();
-            window.stateProposals.find(p => p.id === id).feedback = content;
+            stateProposals.find(p => p.id === id).feedback = content;
             saveState(); closeFeedbackModal(); renderAll(); showToast('Đã gửi góp ý!');
         }
 
         function deleteProposal(id) {
-            const prop = window.stateProposals.find(p => p.id === id);
-            if (prop && prop.mentorEmail) { const lec = window.stateLecturers.find(l => l.email === prop.mentorEmail); if (lec && lec.currentCount > 0) lec.currentCount--; }
-            window.stateProposals = window.stateProposals.filter(p => p.id !== id);
+            const prop = stateProposals.find(p => p.id === id);
+            if (prop && prop.mentorEmail) { const lec = stateLecturers.find(l => l.email === prop.mentorEmail); if (lec && lec.currentCount > 0) lec.currentCount--; }
+            stateProposals = stateProposals.filter(p => p.id !== id);
             saveState(); renderAll(); showToast('Đã xóa đề xuất.');
         }
 
@@ -1100,16 +1111,16 @@
         function closeMatchingModal() { document.getElementById('modal-matching').classList.add('hidden'); }
         function handleMatchingSubmit(event) {
             event.preventDefault();
-            window.stateMatching.unshift({ id: 'm_' + Date.now(), topic: document.getElementById('match-topic').value, content: document.getElementById('match-content').value, contact: document.getElementById('match-contact').value, author: 'Sinh viên' });
+            stateMatching.unshift({ id: 'm_' + Date.now(), topic: document.getElementById('match-topic').value, content: document.getElementById('match-content').value, contact: document.getElementById('match-contact').value, author: 'Sinh viên' });
             saveState(); closeMatchingModal(); switchTab('matching'); showToast('Đã đăng tin tìm đồng đội!');
         }
-        function deleteMatching(id) { window.stateMatching = window.stateMatching.filter(m => m.id !== id); saveState(); renderAll(); showToast('Đã xóa bài tìm đội.'); }
+        function deleteMatching(id) { stateMatching = stateMatching.filter(m => m.id !== id); saveState(); renderAll(); showToast('Đã xóa bài tìm đội.'); }
         function promoteToProposalByIndex(idx) {
-            const item = window.stateMatching[idx];
+            const item = stateMatching[idx];
             document.getElementById('prop-title').value = item.topic;
             document.getElementById('prop-summary').value = item.content;
             document.getElementById('prop-members').value = 'Nhóm kết nối từ Tìm đồng đội';
-            document.getElementById('prop-mentor').innerHTML = '<option value="">-- Chọn Giảng viên --</option>' + window.stateLecturers.map(l => `<option value="${l.email}">${l.name}</option>`).join('');
+            document.getElementById('prop-mentor').innerHTML = '<option value="">-- Chọn Giảng viên (Không bắt buộc) --</option>' + stateLecturers.map(l => `<option value="${l.email}">${l.name}</option>`).join('');
             document.getElementById('modal-proposal').classList.remove('hidden');
         }
 
@@ -1126,35 +1137,30 @@
             const container = document.getElementById('admin-panel-content');
             if (adminSubTab === 'posts') {
                 container.innerHTML = `
-                    <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-900">Quản lý Bài viết & Công bố</h3><button type="button" onclick="openHomePostModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm cursor-pointer">+ Viết bài mới</button></div>
-                    <div class="space-y-3">${window.stateHomePosts.map(post => `
-                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex justify-between items-center">
-                            <div><h4 class="font-semibold text-slate-900">${post.title}</h4><p class="text-xs text-slate-400">${post.date}</p></div>
-                            <button type="button" onclick="deleteHomePost('${post.id}')" class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs cursor-pointer">🗑 Xóa</button>
+                    <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-900">Quản lý Bài viết & Công bố</h3><button type="button" onclick="openHomePostModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm cursor-pointer">+ Viết bài mới</button></div>
+                    <div class="space-y-3">${stateHomePosts.map(post => `
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex justify-between items-center">
+                            <div><h4 class="font-semibold text-slate-900">${post.title}</h4><p class="text-xs text-slate-500">${post.date}</p></div>
+                            <button type="button" onclick="deleteHomePost('${post.id}')" class="px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs cursor-pointer">Xóa</button>
                         </div>
                     `).join('')}</div>
                 `;
             } else if (adminSubTab === 'lecturers') {
                 container.innerHTML = `
-                    <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-900">Quản lý Giảng viên</h3><button type="button" onclick="openAddMentorModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm cursor-pointer">+ Thêm Giảng viên</button></div>
-                    <table class="w-full text-left text-sm text-slate-600"><thead class="bg-slate-50 text-slate-700 uppercase text-xs"><tr><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Khoa</th><th class="p-3 text-right">Thao tác</th></tr></thead>
-                    <tbody class="divide-y divide-slate-100">${window.stateLecturers.map(l => `<tr><td class="p-3 font-semibold text-slate-900">${l.name}</td><td class="p-3">${l.email}</td><td class="p-3">${l.dept}</td><td class="p-3 text-right"><button type="button" onclick="deleteLecturer('${l.id}','${l.email}')" class="text-red-600 text-xs font-semibold cursor-pointer">🗑 Xóa</button></td></tr>`).join('')}</tbody></table>
+                    <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-900">Quản lý Giảng viên</h3><button type="button" onclick="openAddMentorModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm cursor-pointer">+ Thêm Giảng viên</button></div>
+                    <table class="w-full text-left text-sm text-slate-600"><thead class="bg-slate-100 text-slate-700 uppercase text-xs"><tr><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Khoa</th><th class="p-3 text-right">Thao tác</th></tr></thead>
+                    <tbody class="divide-y divide-slate-200">${stateLecturers.map(l => `<tr><td class="p-3 font-semibold text-slate-900">${l.name}</td><td class="p-3 font-mono">${l.email}</td><td class="p-3">${l.dept}</td><td class="p-3 text-right"><button type="button" onclick="deleteLecturer('${l.id}','${l.email}')" class="text-red-600 hover:underline text-xs cursor-pointer">Xóa</button></td></tr>`).join('')}</tbody></table>
                 `;
             } else if (adminSubTab === 'proposals') {
-                container.innerHTML = `<h3 class="font-bold text-lg text-slate-900 mb-6">Kiểm duyệt Đề xuất</h3><div class="space-y-4">${window.stateProposals.map(p => `
-                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex justify-between items-center">
-                        <div><h4 class="font-semibold text-slate-900">${p.title}</h4><p class="text-xs text-slate-400">GVHD: ${p.mentorName || 'Chưa có'}</p></div>
-                        <div class="space-x-2"><button type="button" onclick="announceProposalToHome('${p.id}')" class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs cursor-pointer">📢 Công bố</button><button type="button" onclick="deleteProposal('${p.id}')" class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs cursor-pointer">🗑 Xóa</button></div>
+                container.innerHTML = `<h3 class="font-bold text-lg text-slate-900 mb-6">Kiểm duyệt Đề xuất</h3><div class="space-y-4">${stateProposals.map(p => `
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex justify-between items-center">
+                        <div><h4 class="font-semibold text-slate-900">${p.title}</h4><p class="text-xs text-slate-500">GVHD: ${p.mentorName || 'Chưa có'}</p></div>
+                        <div class="space-x-2"><button type="button" onclick="announceProposalToHome('${p.id}')" class="px-3 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs cursor-pointer">📢 Công bố</button><button type="button" onclick="deleteProposal('${p.id}')" class="px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs cursor-pointer">Xóa</button></div>
                     </div>
                 `).join('')}</div>`;
             } else {
-                container.innerHTML = `
-                    <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-900">Kho Tài liệu & Đề tài Đạt giải</h3><button type="button" onclick="openAddResourceModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm cursor-pointer">+ Thêm mới</button></div>
-                    <div class="space-y-3">
-                        ${window.stateTemplates.map(t => `<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center"><div><span class="text-xs font-semibold text-indigo-600 mr-2">[Biểu mẫu]</span><span>${t.title}</span></div><button type="button" onclick="deleteTemplate('${t.id}')" class="text-red-600 text-xs font-semibold cursor-pointer">🗑 Xóa</button></div>`).join('')}
-                        ${window.stateArchive.map(a => `<div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center"><div><span class="text-xs font-semibold text-emerald-600 mr-2">[Năm ${a.year}]</span><span>${a.title}</span></div><button type="button" onclick="deleteArchive('${a.id}')" class="text-red-600 text-xs font-semibold cursor-pointer">🗑 Xóa</button></div>`).join('')}
-                    </div>
-                `;
+                container.innerHTML = `<div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-900">Kho Tài liệu</h3><button type="button" onclick="openAddResourceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm cursor-pointer">+ Thêm</button></div>
+                <div class="space-y-3">${stateTemplates.map(t => `<div class="p-3 bg-slate-50/60 border border-slate-200 rounded-xl flex justify-between items-center"><span>${t.title}</span><button type="button" onclick="deleteTemplate('${t.id}')" class="text-red-600 hover:underline text-xs cursor-pointer">Xóa</button></div>`).join('')}</div>`;
             }
         }
 
@@ -1162,122 +1168,25 @@
         function closeAddMentorModal() { document.getElementById('modal-add-mentor').classList.add('hidden'); }
         function handleAddMentorSubmit(event) {
             event.preventDefault();
-            const name = document.getElementById('mentor-name-input').value.trim();
-            const email = document.getElementById('mentor-email-input').value.trim();
-            const maxQuota = parseInt(document.getElementById('mentor-quota-input').value, 10) || 3;
-            window.stateLecturers.push({ id: 'l_' + Date.now(), email, name, dept: document.getElementById('mentor-dept-input').value.trim(), maxQuota, currentCount: 0 });
-            window.statePasswords[email] = document.getElementById('mentor-pass-input').value.trim();
+            const name = document.getElementById('mentor-name-input').value;
+            const email = document.getElementById('mentor-email-input').value;
+            stateLecturers.push({ id: 'l_' + Date.now(), email, name, dept: document.getElementById('mentor-dept-input').value, maxQuota: 3, currentCount: 0 });
+            statePasswords[email] = document.getElementById('mentor-pass-input').value;
             saveState(); closeAddMentorModal(); renderAll(); showToast('Đã thêm giảng viên!');
         }
-        function deleteLecturer(id, email) {
-            window.stateLecturers = window.stateLecturers.filter(l => l.id !== id && l.email !== email);
-            delete window.statePasswords[email];
-            window.stateProposals.forEach(p => {
-                if (p.mentorEmail === email) {
-                    p.mentorEmail = '';
-                    p.mentorName = '';
-                    p.status = 'pending';
-                }
-            });
-            saveState(); renderAll(); showToast('Đã xóa giảng viên.');
-        }
+        function deleteLecturer(id, email) { stateLecturers = stateLecturers.filter(l => l.id !== id); delete statePasswords[email]; saveState(); renderAll(); showToast('Đã xóa GV.'); }
 
-        function openAddResourceModal() {
-            document.getElementById('res-type-input').value = 'template';
-            document.getElementById('res-title-input').value = '';
-            document.getElementById('res-authors-input').value = '';
-            document.getElementById('res-year-input').value = '2026';
-            document.getElementById('res-link-input').value = 'https://docs.google.com/';
-            toggleArchiveFields();
-            document.getElementById('modal-add-resource').classList.remove('hidden');
-        }
+        function openAddResourceModal() { document.getElementById('modal-add-resource').classList.remove('hidden'); }
         function closeAddResourceModal() { document.getElementById('modal-add-resource').classList.add('hidden'); }
-        function toggleArchiveFields() {
-            const type = document.getElementById('res-type-input').value;
-            const extra = document.getElementById('archive-extra-fields');
-            if (type === 'archive') extra.classList.remove('hidden');
-            else extra.classList.add('hidden');
-        }
         function handleAddResourceSubmit(event) {
             event.preventDefault();
-            const type = document.getElementById('res-type-input').value;
-            const title = document.getElementById('res-title-input').value.trim();
-            const link = document.getElementById('res-link-input').value.trim();
-            if (type === 'archive') {
-                const authors = document.getElementById('res-authors-input').value.trim() || 'Nhóm sinh viên';
-                const year = document.getElementById('res-year-input').value.trim() || '2026';
-                window.stateArchive.unshift({ id: 'a_' + Date.now(), title, authors, year, link });
-                setResourceSubTab('archive');
-            } else {
-                window.stateTemplates.unshift({ id: 't_' + Date.now(), title, type: 'Biểu mẫu', link });
-                setResourceSubTab('templates');
-            }
+            stateTemplates.unshift({ id: 't_' + Date.now(), title: document.getElementById('res-title-input').value, type: 'Biểu mẫu', link: document.getElementById('res-link-input').value });
             saveState(); closeAddResourceModal(); renderAll(); showToast('Đã thêm tài liệu!');
         }
-        function deleteTemplate(id) { window.stateTemplates = window.stateTemplates.filter(t => t.id !== id); saveState(); renderAll(); showToast('Đã xóa biểu mẫu.'); }
-        function deleteArchive(id) { window.stateArchive = window.stateArchive.filter(a => a.id !== id); saveState(); renderAll(); showToast('Đề tài đã xóa.'); }
+        function deleteTemplate(id) { stateTemplates = stateTemplates.filter(t => t.id !== id); saveState(); renderAll(); showToast('Đã xóa biểu mẫu.'); }
+        function deleteArchive(id) { stateArchive = stateArchive.filter(a => a.id !== id); saveState(); renderAll(); showToast('Đã xóa đề tài.'); }
 
         window.addEventListener('DOMContentLoaded', () => { renderAll(); });
-    </script>
-
-    <!-- FIREBASE CLOUD FIRESTORE REAL-TIME SYNC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCicQL7Iuo1b1cgFWvlNMuSL8Ng52jYycM",
-            authDomain: "nckh-d2798.firebaseapp.com",
-            projectId: "nckh-d2798",
-            storageBucket: "nckh-d2798.firebasestorage.app",
-            messagingSenderId: "511807636507",
-            appId: "1:511807636507:web:b107b2ec3d43c6014da4be",
-            measurementId: "G-RPNYT7GXEZ"
-        };
-
-        try {
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            const stateDocRef = doc(db, "nckh_hub", "shared_data");
-
-            // Hàm đẩy dữ liệu mới lên đám mây mỗi khi người dùng thêm/xóa
-            window.syncToFirebaseCloud = async () => {
-                try {
-                    await setDoc(stateDocRef, {
-                        homePosts: window.stateHomePosts,
-                        lecturers: window.stateLecturers,
-                        proposals: window.stateProposals,
-                        matching: window.stateMatching,
-                        templates: window.stateTemplates,
-                        archive: window.stateArchive,
-                        passwords: window.statePasswords,
-                        updatedAt: Date.now()
-                    }, { merge: true });
-                } catch (err) {
-                    console.warn("Chưa bật quyền ghi Firestore (Test mode), đang lưu tạm trên trình duyệt:", err.message);
-                }
-            };
-
-            // Lắng nghe dữ liệu thời gian thực từ đám mây về máy của mọi người
-            onSnapshot(stateDocRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.data();
-                    if (data.homePosts) window.stateHomePosts = data.homePosts;
-                    if (data.lecturers) window.stateLecturers = data.lecturers;
-                    if (data.proposals) window.stateProposals = data.proposals;
-                    if (data.matching) window.stateMatching = data.matching;
-                    if (data.templates) window.stateTemplates = data.templates;
-                    if (data.archive) window.stateArchive = data.archive;
-                    if (data.passwords) window.statePasswords = data.passwords;
-                    if (typeof window.renderAll === 'function') window.renderAll();
-                } else {
-                    // Khởi tạo dữ liệu lần đầu tiên lên Firestore
-                    window.syncToFirebaseCloud();
-                }
-            });
-        } catch (e) {
-            console.warn("Firebase khởi chạy ở chế độ Local:", e);
-        }
     </script>
 </body>
 </html>
