@@ -322,6 +322,11 @@
                     <input type="text" id="prop-members" required placeholder="VD: Nguyễn Văn A (CNTT - K18)" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-sm">
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Tải file Thuyết minh từ máy tính (Word, PDF...)</label>
+                    <input type="file" id="prop-file-input" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm bg-slate-50 cursor-pointer">
+                    <p class="text-[11px] text-slate-500 mt-1">💡 Chỉ Giảng viên được bạn chọn hướng dẫn mới có quyền tải file này.</p>
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Giảng viên mong muốn hướng dẫn</label>
                     <select id="prop-mentor" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-sm"></select>
                 </div>
@@ -365,13 +370,17 @@
     <div id="modal-feedback" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold text-slate-900">Gửi Góp ý cho Nhóm</h3>
+                <h3 class="text-xl font-bold text-slate-900">Gửi Góp ý & Tải File từ máy</h3>
                 <button type="button" onclick="closeFeedbackModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold cursor-pointer">×</button>
             </div>
             <input type="hidden" id="feedback-proposal-id">
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1">Nội dung góp ý / Chỉnh sửa</label>
-                <textarea id="feedback-content" rows="4" required placeholder="Nhập góp ý cho nhóm..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-sm"></textarea>
+                <textarea id="feedback-content" rows="3" required placeholder="Nhập góp ý cho nhóm..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-hidden text-sm"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Tải file chỉnh sửa từ máy tính</label>
+                <input type="file" id="feedback-file-input" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm bg-slate-50 cursor-pointer">
             </div>
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" onclick="closeFeedbackModal()" class="px-4 py-2.5 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 font-medium text-sm cursor-pointer">Hủy</button>
@@ -512,7 +521,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Khởi tạo dữ liệu mặc định
         window.defaultHomePosts = [
             {
                 id: 'hp1',
@@ -529,7 +537,6 @@
             { id: 'l2', email: 'minh.tt@edu.vn', name: 'TS. Trần Thị Minh', dept: 'Khoa Quản trị Kinh doanh', maxQuota: 2, currentCount: 2 }
         ];
 
-        // Hàm đồng bộ lưu lên Firebase Firestore
         window.saveStateToCloud = async function() {
             try {
                 const dataToSave = {
@@ -549,7 +556,6 @@
             }
         };
 
-        // Hàm tải dữ liệu từ Firebase Firestore về web
         window.loadStateFromCloud = async function() {
             try {
                 const docRef = doc(db, "nckh_hub", "shared_data");
@@ -841,12 +847,57 @@
             container.innerHTML = filtered.map(p => {
                 const isAccepted = p.status === 'accepted';
                 let actionHtml = '';
+                
                 if (currentUser && currentUser.role === 'lecturer') {
-                    if (!isAccepted) actionHtml = `<button type="button" onclick="acceptProposal('${p.id}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">✅ Nhận hướng dẫn</button>`;
-                    else if (p.mentorEmail === currentUser.email) actionHtml = `<button type="button" onclick="openFeedbackModal('${p.id}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">💬 Gửi góp ý</button>`;
+                    if (p.mentorEmail && p.mentorEmail.toLowerCase() === currentUser.email.toLowerCase()) {
+                        if (!isAccepted || p.status === 'pending') {
+                            actionHtml = `
+                                <div class="flex items-center space-x-2">
+                                    <button type="button" onclick="acceptProposal('${p.id}')" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs transition cursor-pointer">✅ Nhận hướng dẫn</button>
+                                    <button type="button" onclick="rejectProposal('${p.id}')" class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-xs transition cursor-pointer">❌ Từ chối</button>
+                                </div>
+                            `;
+                        } else {
+                            actionHtml = `
+                                <div class="flex items-center space-x-2">
+                                    <button type="button" onclick="rejectProposal('${p.id}')" class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow-xs transition cursor-pointer">❌ Từ chối / Hủy nhận</button>
+                                    <button type="button" onclick="openFeedbackModal('${p.id}')" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition cursor-pointer">💬 Gửi góp ý & File</button>
+                                </div>
+                            `;
+                        }
+                    } else if (!p.mentorEmail && !isAccepted) {
+                        actionHtml = `
+                            <div class="flex items-center space-x-2">
+                                <button type="button" onclick="acceptProposal('${p.id}')" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs transition cursor-pointer">✅ Nhận hướng dẫn</button>
+                            </div>
+                        `;
+                    }
                 }
-                let announceBtn = (currentUser && currentUser.role === 'admin') ? `<button type="button" onclick="announceProposalToHome('${p.id}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 rounded-lg text-xs font-semibold transition cursor-pointer">📢 Công bố Trang chủ</button>` : '';
-                let deleteBtn = `<button type="button" onclick="deleteProposal('${p.id}')" class="px-3 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-lg text-xs font-semibold transition cursor-pointer">🗑 Xóa</button>`;
+
+                let announceBtn = (currentUser && currentUser.role === 'admin') ? `<button type="button" onclick="announceProposalToHome('${p.id}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 rounded-lg text-xs font-semibold transition cursor-pointer">📢 Công bố</button>` : '';
+                let deleteBtn = (currentUser && currentUser.role === 'admin') ? `<button type="button" onclick="deleteProposal('${p.id}')" class="px-3 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-lg text-xs font-semibold transition cursor-pointer">🗑 Xóa</button>` : '';
+
+                let canViewFile = currentUser && (currentUser.role === 'admin' || (currentUser.role === 'lecturer' && p.mentorEmail && p.mentorEmail.toLowerCase() === currentUser.email.toLowerCase()));
+                
+                let studentFileHtml = '';
+                if (p.fileName && p.fileData) {
+                    if (canViewFile) {
+                        studentFileHtml = `<div class="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between"><span class="text-xs font-medium text-slate-700">📎 File đính kèm từ sinh viên: <strong>${p.fileName}</strong></span><a href="${p.fileData}" download="${p.fileName}" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg">📥 Tải xuống file</a></div>`;
+                    } else {
+                        studentFileHtml = `<div class="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500 italic">🔒 Đã đính kèm file thuyết minh (Chỉ Giảng viên hướng dẫn được chọn mới có quyền tải xuống).</div>`;
+                    }
+                }
+
+                let feedbackFileHtml = '';
+                if (p.feedback || (p.feedbackFileName && p.feedbackFileData)) {
+                    let fbFileBtn = (p.feedbackFileName && p.feedbackFileData) ? `<a href="${p.feedbackFileData}" download="${p.feedbackFileName}" class="mt-2 inline-block px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg">📥 Tải file góp ý (${p.feedbackFileName})</a>` : '';
+                    feedbackFileHtml = `
+                        <div class="bg-indigo-50 border border-indigo-100 p-3.5 rounded-xl text-xs text-indigo-900 mt-3 space-y-2">
+                            <div><strong>💬 Góp ý từ Giảng viên (${p.mentorName || ''}):</strong> ${p.feedback || ''}</div>
+                            ${fbFileBtn}
+                        </div>
+                    `;
+                }
 
                 return `
                     <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
@@ -862,7 +913,8 @@
                             <div>👥 <strong class="text-slate-700">Thành viên:</strong> ${p.members}</div>
                             <div>🎓 <strong class="text-slate-700">GVHD:</strong> ${p.mentorName || 'Chưa có'}</div>
                         </div>
-                        ${p.feedback ? `<div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl text-xs text-indigo-900 mt-2"><strong>Góp ý từ Giảng viên:</strong> ${p.feedback}</div>` : ''}
+                        ${studentFileHtml}
+                        ${feedbackFileHtml}
                     </div>
                 `;
             }).join('');
@@ -875,7 +927,7 @@
                     <div class="space-y-3">
                         <div class="flex justify-between items-start gap-2">
                             <h3 class="font-bold text-base text-slate-900">${m.topic}</h3>
-                            <button type="button" onclick="deleteMatching('${m.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-semibold cursor-pointer shrink-0">🗑 X-óa</button>
+                            <button type="button" onclick="deleteMatching('${m.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-semibold cursor-pointer shrink-0">🗑 Xóa</button>
                         </div>
                         <p class="text-sm text-slate-600 leading-relaxed">${m.content}</p>
                     </div>
@@ -968,13 +1020,13 @@
             }
         }
 
-        function openLoginModal() { 
+        window.openLoginModal = function() { 
             document.getElementById('login-username').value = '';
             document.getElementById('login-password').value = '';
             document.getElementById('login-error').classList.add('hidden');
             document.getElementById('modal-login').classList.remove('hidden'); 
-        }
-        function closeLoginModal() { document.getElementById('modal-login').classList.add('hidden'); }
+        };
+        window.closeLoginModal = function() { document.getElementById('modal-login').classList.add('hidden'); };
 
         function handleLoginSubmit(event) {
             event.preventDefault();
@@ -1110,35 +1162,144 @@
             const title = document.getElementById('prop-title').value.trim();
             const summary = document.getElementById('prop-summary').value.trim();
             const members = document.getElementById('prop-members').value.trim();
+            const fileInput = document.getElementById('prop-file-input');
             const mentorEmail = document.getElementById('prop-mentor').value;
             let mentorName = '';
-            if (mentorEmail) { const lec = window.stateLecturers.find(l => l.email === mentorEmail); if (lec) { mentorName = lec.name; lec.currentCount++; } }
-            window.stateProposals.unshift({ id: 'p_' + Date.now(), title, summary, members, mentorEmail, mentorName, status: mentorEmail ? 'accepted' : 'pending', feedback: '' });
-            saveState(); closeProposalModal(); switchTab('proposals'); showToast('Đã gửi đề xuất đề tài!');
+            
+            if (mentorEmail) { 
+                const lec = window.stateLecturers.find(l => l.email === mentorEmail); 
+                if (lec) { 
+                    mentorName = lec.name; 
+                } 
+            }
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    window.stateProposals.unshift({ 
+                        id: 'p_' + Date.now(), 
+                        title, 
+                        summary, 
+                        members, 
+                        fileName: fileInput.files[0].name,
+                        fileData: e.target.result, 
+                        mentorEmail, 
+                        mentorName, 
+                        status: mentorEmail ? 'accepted' : 'pending', 
+                        feedback: '', 
+                        feedbackFileName: '',
+                        feedbackFileData: '' 
+                    });
+                    if (mentorEmail) {
+                        const lec = window.stateLecturers.find(l => l.email === mentorEmail);
+                        if (lec) lec.currentCount++;
+                    }
+                    saveState(); 
+                    closeProposalModal(); 
+                    switchTab('proposals'); 
+                    showToast('Đã gửi đề xuất và đính kèm file thành công!');
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                window.stateProposals.unshift({ 
+                    id: 'p_' + Date.now(), 
+                    title, 
+                    summary, 
+                    members, 
+                    fileName: '',
+                    fileData: '', 
+                    mentorEmail, 
+                    mentorName, 
+                    status: mentorEmail ? 'accepted' : 'pending', 
+                    feedback: '', 
+                    feedbackFileName: '',
+                    feedbackFileData: '' 
+                });
+                if (mentorEmail) {
+                    const lec = window.stateLecturers.find(l => l.email === mentorEmail);
+                    if (lec) lec.currentCount++;
+                }
+                saveState(); 
+                closeProposalModal(); 
+                switchTab('proposals'); 
+                showToast('Đã gửi đề xuất thành công!');
+            }
         }
 
         function acceptProposal(id) {
             const prop = window.stateProposals.find(p => p.id === id);
             const lec = window.stateLecturers.find(l => l.email === currentUser.email);
-            if (lec.currentCount >= lec.maxQuota) { alert('Đã đạt giới hạn chỉ tiêu!'); return; }
-            prop.status = 'accepted'; prop.mentorEmail = lec.email; prop.mentorName = lec.name; lec.currentCount++;
-            saveState(); renderAll(); showToast('Đã nhận hướng dẫn!');
+            if (lec.currentCount >= lec.maxQuota) { alert('Đã đạt giới hạn chỉ tiêu hướng dẫn!'); return; }
+            prop.status = 'accepted'; 
+            prop.mentorEmail = lec.email; 
+            prop.mentorName = lec.name; 
+            lec.currentCount++;
+            saveState(); 
+            renderAll(); 
+            showToast('Đã xác nhận nhận hướng dẫn đề tài!');
         }
 
-        function openFeedbackModal(id) { document.getElementById('feedback-proposal-id').value = id; document.getElementById('modal-feedback').classList.remove('hidden'); }
+        function rejectProposal(id) {
+            const prop = window.stateProposals.find(p => p.id === id);
+            if (!prop) return;
+            if (prop.mentorEmail) {
+                const lec = window.stateLecturers.find(l => l.email === prop.mentorEmail);
+                if (lec && lec.currentCount > 0) lec.currentCount--;
+            }
+            prop.status = 'pending';
+            prop.mentorEmail = '';
+            prop.mentorName = '';
+            saveState();
+            renderAll();
+            showToast('Đã từ chối / hủy nhận đề tài.');
+        }
+
+        function openFeedbackModal(id) { 
+            document.getElementById('feedback-proposal-id').value = id; 
+            document.getElementById('feedback-content').value = '';
+            document.getElementById('feedback-file-input').value = '';
+            document.getElementById('modal-feedback').classList.remove('hidden'); 
+        }
         function closeFeedbackModal() { document.getElementById('modal-feedback').classList.add('hidden'); }
+        
         function submitLecturerFeedback() {
             const id = document.getElementById('feedback-proposal-id').value;
             const content = document.getElementById('feedback-content').value.trim();
-            window.stateProposals.find(p => p.id === id).feedback = content;
-            saveState(); closeFeedbackModal(); renderAll(); showToast('Đã gửi góp ý!');
+            const fileInput = document.getElementById('feedback-file-input');
+            const prop = window.stateProposals.find(p => p.id === id);
+            
+            if (prop) {
+                prop.feedback = content;
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        prop.feedbackFileName = fileInput.files[0].name;
+                        prop.feedbackFileData = e.target.result;
+                        saveState(); 
+                        closeFeedbackModal(); 
+                        renderAll(); 
+                        showToast('Đã gửi góp ý và file thành công!');
+                    };
+                    reader.readAsDataURL(fileInput.files[0]);
+                    return;
+                }
+            }
+            saveState(); 
+            closeFeedbackModal(); 
+            renderAll(); 
+            showToast('Đã gửi góp ý cho nhóm!');
         }
 
         function deleteProposal(id) {
             const prop = window.stateProposals.find(p => p.id === id);
-            if (prop && prop.mentorEmail) { const lec = window.stateLecturers.find(l => l.email === prop.mentorEmail); if (lec && lec.currentCount > 0) lec.currentCount--; }
+            if (prop && prop.mentorEmail && prop.status === 'accepted') { 
+                const lec = window.stateLecturers.find(l => l.email === prop.mentorEmail); 
+                if (lec && lec.currentCount > 0) lec.currentCount--; 
+            }
             window.stateProposals = window.stateProposals.filter(p => p.id !== id);
-            saveState(); renderAll(); showToast('Đã xóa đề xuất.');
+            saveState(); 
+            renderAll(); 
+            showToast('Đã xóa đề xuất.');
         }
 
         function openMatchingModal() { document.getElementById('modal-matching').classList.remove('hidden'); }
