@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCKH Hub - Cổng Kết Nối Nghiên Cứu Khoa Học Sinh Viên</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121215;
+            color: #f4f4f5;
+        }
+        .hidden { display: none !important; }
+        /* Custom scrollbar cho dark mode */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #18181c; }
+        ::-webkit-scrollbar-thumb { background: #2e2e38; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f4e; }
+    </style>
+</head>
+<body class="bg-[#121215] text-zinc-100 min-h-screen flex flex-col">
+
+    <!-- Header / Navigation -->
+    <header class="bg-[#18181c] border-b border-zinc-800/80 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-600/20">N</div>
+                <div>
+                    <h1 class="font-bold text-lg text-white leading-tight">NCKH Hub</h1>
+                    <p class="text-xs text-zinc-400">Cổng Kết Nối Nghiên Cứu Khoa Học</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="hidden md:flex space-x-1">
+                <button type="button" onclick="switchTab('home')" id="nav-home" class="px-3.5 py-2 rounded-lg text-sm font-medium text-indigo-400 bg-[#242438] cursor-pointer transition">Trang chủ</button>
+                <button type="button" onclick="switchTab('proposals')" id="nav-proposals" class="px-3.5 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 cursor-pointer transition">Đề xuất Đề tài</button>
+                <button type="button" onclick="switchTab('matching')" id="nav-matching" class="px-3.5 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 cursor-pointer transition">Tìm Đồng đội</button>
+                <button type="button" onclick="switchTab('mentors')" id="nav-mentors" class="px-3.5 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 cursor-pointer transition">Danh bạ Giảng viên</button>
+                <button type="button" onclick="switchTab('resources')" id="nav-resources" class="px-3.5 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 cursor-pointer transition">Kho Tài liệu</button>
+            </nav>
+
+            <!-- Right Actions & Auth Status -->
+            <div class="flex items-center space-x-3">
+                <div id="cloud-status" class="hidden sm:flex items-center text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-3 py-1 rounded-full font-medium">
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full mr-1.5 animate-pulse"></span>
+                    <span>Online</span>
+                </div>
+                <div id="auth-status-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Nav Bar -->
+    <div class="md:hidden bg-[#18181c] border-b border-zinc-800 px-4 py-2.5 flex justify-around text-xs font-medium text-zinc-400">
+        <button type="button" onclick="switchTab('home')" id="nm-home" class="text-indigo-400 font-semibold cursor-pointer">Trang chủ</button>
+        <button type="button" onclick="switchTab('proposals')" id="nm-proposals" class="cursor-pointer">Đề xuất</button>
+        <button type="button" onclick="switchTab('matching')" id="nm-matching" class="cursor-pointer">Tìm đội</button>
+        <button type="button" onclick="switchTab('mentors')" id="nm-mentors" class="cursor-pointer">Giảng viên</button>
+        <button type="button" onclick="switchTab('resources')" id="nm-resources" class="cursor-pointer">Tài liệu</button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 hidden bg-indigo-600 text-white px-4 py-3 rounded-xl shadow-xl border border-indigo-400/30 text-sm font-medium flex items-center space-x-2">
+        <span id="toast-message">Thông báo</span>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: TRANG CHỦ -->
+        <section id="tab-home" class="space-y-8">
+            <!-- Hero Banner giống hệt ảnh mẫu -->
+            <div class="bg-gradient-to-r from-[#4f39f6] via-[#6339f6] to-[#7c3aed] rounded-2xl p-8 sm:p-12 text-white shadow-2xl border border-white/10">
+                <div class="max-w-3xl">
+                    <span class="bg-white/15 text-white text-xs font-semibold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Nền tảng NCKH Sinh viên</span>
+                    <h2 class="text-3xl sm:text-5xl font-bold tracking-tight mt-5 mb-4 leading-tight">Nơi sinh viên kết nối nhóm và trình bày ý tưởng NCKH tới Giảng viên</h2>
+                    <p class="text-indigo-100 text-base sm:text-lg mb-8 leading-relaxed">Tìm kiếm đồng đội cùng tần số, hoàn thiện hồ sơ đề tài và nhận sự hướng dẫn trực tiếp từ các giảng viên chuyên môn hàng đầu.</p>
+                    <div class="flex flex-wrap gap-4">
+                        <button type="button" onclick="switchTab('matching')" class="bg-[#121215] hover:bg-zinc-900 text-indigo-400 px-6 py-3.5 rounded-xl font-semibold shadow-lg transition cursor-pointer">Tìm đồng đội ngay</button>
+                        <button type="button" onclick="switchTab('proposals')" class="bg-indigo-500/40 hover:bg-indigo-500/60 text-white border border-indigo-300/40 px-6 py-3.5 rounded-xl font-semibold backdrop-blur-sm transition cursor-pointer">Gửi Đề xuất Đề tài</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thống kê nhanh (Dark Cards) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90 flex items-center space-x-4 cursor-pointer hover:border-indigo-500/50 transition" onclick="switchTab('matching')">
+                    <div class="w-12 h-12 bg-[#22223b] rounded-xl flex items-center justify-center text-indigo-400 font-bold text-xl">👥</div>
+                    <div>
+                        <p class="text-sm font-medium text-zinc-400">Nhóm đã kết nối</p>
+                        <p class="text-2xl font-bold text-white" id="stat-teams">0</p>
+                    </div>
+                </div>
+                <div class="bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90 flex items-center space-x-4 cursor-pointer hover:border-emerald-500/50 transition" onclick="switchTab('proposals')">
+                    <div class="w-12 h-12 bg-[#142e24] rounded-xl flex items-center justify-center text-emerald-400 font-bold text-xl">📝</div>
+                    <div>
+                        <p class="text-sm font-medium text-zinc-400">Đề tài đã gửi giảng viên</p>
+                        <p class="text-2xl font-bold text-white" id="stat-proposals">0</p>
+                    </div>
+                </div>
+                <div class="bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90 flex items-center space-x-4 cursor-pointer hover:border-amber-500/50 transition" onclick="switchTab('mentors')">
+                    <div class="w-12 h-12 bg-[#2d2315] rounded-xl flex items-center justify-center text-amber-400 font-bold text-xl">🎓</div>
+                    <div>
+                        <p class="text-sm font-medium text-zinc-400">Giảng viên hướng dẫn</p>
+                        <p class="text-2xl font-bold text-white" id="stat-mentors">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BẢNG TIN CÔNG BỐ & BÀI VIẾT THAM KHẢO TRANG CHỦ (MỚI) -->
+            <div class="bg-[#18181c] rounded-2xl border border-zinc-800/90 p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-800 pb-5">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">Bảng tin NCKH</span>
+                            <span class="text-xs text-zinc-500">Cập nhật liên tục</span>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mt-2">Công bố Đề tài, Giải thưởng & Bài viết Tham khảo</h3>
+                        <p class="text-sm text-zinc-400 mt-1">Nơi công bố danh sách các đề tài được duyệt, vinh danh các nhóm đạt giải NCKH và chia sẻ kinh nghiệm nghiên cứu.</p>
+                    </div>
+                    <div id="home-admin-post-action" class="shrink-0"></div>
+                </div>
+
+                <!-- Bộ lọc chuyên mục bài viết trang chủ -->
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="setPostFilter('all')" id="post-filter-all" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white cursor-pointer transition">Tất cả bài đăng</button>
+                    <button type="button" onclick="setPostFilter('approved')" id="post-filter-approved" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 cursor-pointer transition">✅ Công bố Đề tài được duyệt</button>
+                    <button type="button" onclick="setPostFilter('award')" id="post-filter-award" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 cursor-pointer transition">🏆 Nhóm đạt giải NCKH</button>
+                    <button type="button" onclick="setPostFilter('reference')" id="post-filter-reference" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 cursor-pointer transition">📚 Bài viết Tham khảo</button>
+                </div>
+
+                <!-- Danh sách bài viết -->
+                <div id="home-posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <!-- Hoạt động gần đây -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-[#18181c] rounded-2xl border border-zinc-800/90 p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-lg text-white">Nhóm đang tìm đồng đội</h3>
+                        <button type="button" onclick="switchTab('matching')" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer">Xem tất cả →</button>
+                    </div>
+                    <div id="home-matching-list" class="space-y-4"></div>
+                </div>
+
+                <div class="bg-[#18181c] rounded-2xl border border-zinc-800/90 p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-lg text-white">Đề tài mới gửi giảng viên</h3>
+                        <button type="button" onclick="switchTab('proposals')" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 cursor-pointer">Xem tất cả →</button>
+                    </div>
+                    <div id="home-proposals-list" class="space-y-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: ĐỀ XUẤT ĐỀ TÀI -->
+        <section id="tab-proposals" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Đề xuất Đề tài NCKH</h2>
+                    <p class="text-sm text-zinc-400 mt-1">Danh sách ý tưởng đã sẵn sàng, gửi tới Giảng viên để xin nhận hướng dẫn.</p>
+                </div>
+                <button type="button" onclick="openProposalModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-sm transition cursor-pointer">
+                    + Đăng ký Đề xuất Mới
+                </button>
+            </div>
+
+            <div class="flex flex-wrap gap-2 border-b border-zinc-800 pb-3">
+                <button type="button" onclick="setProposalFilter('all')" id="p-filter-all" class="px-4 py-2 rounded-xl text-sm font-medium bg-[#242438] text-indigo-400 cursor-pointer">Tất cả</button>
+                <button type="button" onclick="setProposalFilter('pending')" id="p-filter-pending" class="px-4 py-2 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 cursor-pointer">Đang chờ nhận (🟡)</button>
+                <button type="button" onclick="setProposalFilter('accepted')" id="p-filter-accepted" class="px-4 py-2 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 cursor-pointer">Đã có GV hướng dẫn (🟢)</button>
+            </div>
+
+            <div id="proposals-container" class="grid grid-cols-1 gap-6"></div>
+        </section>
+
+        <!-- TAB 3: TÌM ĐỒNG ĐỘI -->
+        <section id="tab-matching" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Tìm Đồng đội Nghiên cứu Khoa học</h2>
+                    <p class="text-sm text-zinc-400 mt-1">Tìm kiếm các mảnh ghép phù hợp hoặc tạo nhóm mới để cùng thực hiện đề tài.</p>
+                </div>
+                <button type="button" onclick="openMatchingModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium shadow-sm transition cursor-pointer">
+                    + Đăng tin Tìm Bạn
+                </button>
+            </div>
+
+            <div id="matching-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        </section>
+
+        <!-- TAB 4: DANH BẠ GIẢNG VIÊN -->
+        <section id="tab-mentors" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Danh bạ Giảng viên Hướng dẫn</h2>
+                    <p class="text-sm text-zinc-400 mt-1">Thông tin chuyên ngành và chỉ tiêu nhận nhóm của các Giảng viên.</p>
+                </div>
+                <div id="admin-mentor-action"></div>
+            </div>
+
+            <div id="mentors-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </section>
+
+        <!-- TAB 5: KHO TÀI LIỆU -->
+        <section id="tab-resources" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Kho Tài liệu & Biểu mẫu NCKH</h2>
+                    <p class="text-sm text-zinc-400 mt-1">Tải về biểu mẫu chuẩn và tham khảo các đề tài đạt giải các năm trước.</p>
+                </div>
+                <div id="admin-resource-action"></div>
+            </div>
+
+            <div class="flex space-x-6 border-b border-zinc-800 pb-3">
+                <button type="button" onclick="setResourceSubTab('templates')" id="res-tab-templates" class="font-semibold text-indigo-400 border-b-2 border-indigo-400 pb-2 cursor-pointer">Biểu mẫu Thuyết minh</button>
+                <button type="button" onclick="setResourceSubTab('archive')" id="res-tab-archive" class="font-semibold text-zinc-400 hover:text-zinc-200 pb-2 cursor-pointer">Đề tài Đạt giải Các năm trước</button>
+            </div>
+
+            <div id="resources-container"></div>
+        </section>
+
+        <!-- TAB 6: ADMIN PANEL -->
+        <section id="tab-admin" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-indigo-900 to-violet-900 border border-indigo-700/50 text-white p-6 rounded-2xl shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <span class="bg-indigo-950/80 text-indigo-300 border border-indigo-700/50 text-xs px-3 py-1 rounded-full uppercase tracking-wider">Hệ thống Quản trị CLB</span>
+                    <h2 class="text-2xl font-bold mt-2">Bảng điều khiển Quản trị viên (Admin)</h2>
+                    <p class="text-indigo-200 text-sm mt-1">Đăng bài công bố trang chủ, quản lý giảng viên, kiểm duyệt đề tài và kho tài liệu.</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button type="button" onclick="openHomePostModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition cursor-pointer">+ Đăng bài Trang chủ</button>
+                    <button type="button" onclick="switchTab('home')" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer">Về Trang chủ</button>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 border-b border-zinc-800 pb-3">
+                <button type="button" onclick="setAdminSubTab('posts')" id="adm-tab-posts" class="px-4 py-2 rounded-xl text-sm font-medium bg-[#242438] text-indigo-400 cursor-pointer">Bài đăng Trang chủ</button>
+                <button type="button" onclick="setAdminSubTab('lecturers')" id="adm-tab-lecturers" class="px-4 py-2 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 cursor-pointer">Quản lý Giảng viên</button>
+                <button type="button" onclick="setAdminSubTab('proposals')" id="adm-tab-proposals" class="px-4 py-2 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 cursor-pointer">Kiểm duyệt & Công bố Đề tài</button>
+                <button type="button" onclick="setAdminSubTab('resources')" id="adm-tab-resources" class="px-4 py-2 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 cursor-pointer">Quản lý Kho tài liệu</button>
+            </div>
+
+            <div id="admin-panel-content" class="bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90"></div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#18181c] border-t border-zinc-800/80 mt-16 py-8 text-center text-sm text-zinc-500">
+        <p>© 2026 NCKH Hub - Cổng Kết Nối Nghiên Cứu Khoa Học Sinh Viên.</p>
+    </footer>
+
+    <!-- MODAL ĐĂNG BÀI VIẾT / CÔNG BỐ TRANG CHỦ (DÀNH CHO ADMIN) -->
+    <div id="modal-home-post" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181c] border border-zinc-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
+                <h3 class="text-xl font-bold text-white">Đăng Bài Viết / Công Bố Lên Trang Chủ</h3>
+                <button type="button" onclick="closeHomePostModal()" class="text-zinc-400 hover:text-white text-xl font-bold cursor-pointer">×</button>
+            </div>
+            <form onsubmit="handleHomePostSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Chuyên mục bài đăng</label>
+                    <select id="post-category-input" class="w-full px-4 py-2.5 bg-[#121215] border border-zinc-700 text-zinc-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="approved">✅ Công bố Đề tài được duyệt</option>
+                        <option value="award">🏆 Vinh danh Nhóm đạt giải NCKH</option>
+                        <option value="reference">📚 Bài viết / Tài liệu tham khảo</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Tiêu đề bài viết / Công bố</label>
+                    <input type="text" id="post-title-input" required placeholder="VD: Công bố danh sách 15 đề tài NCKH cấp Trường được duyệt đợt 1" class="w-full px-4 py-2.5 bg-[#121215] border border-zinc-700 text-zinc-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Nhóm tác giả / Sinh viên / Đơn vị liên quan</label>
+                    <input type="text" id="post-highlight-input" placeholder="VD: Nhóm SV Khoa CNTT - GVHD: PGS.TS Nguyễn Văn An" class="w-full px-4 py-2.5 bg-[#121215] border border-zinc-700 text-zinc-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Nội dung chi tiết</label>
+                    <textarea id="post-content-input" rows="4" required placeholder="Nhập nội dung thông báo, tóm tắt đề tài đạt giải hoặc hướng dẫn tham khảo..." class="w-full px-4 py-2.5 bg-[#121215] border border-zinc-700 text-zinc-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Link tài liệu / File đính kèm (Không bắt buộc)</label>
+                    <input type="url" id="post-link-input" placeholder="https://docs.google.com/..." class="w-full px-4 py-2.5 bg-[#121215] border border-zinc-700 text-zinc-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeHomePostModal()" class="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium text-sm cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Đăng lên Trang chủ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL XEM CHI TIẾT BÀI VIẾT TRANG CHỦ -->
+    <div id="modal-view-post" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181c] border border-zinc-800 rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start gap-4 border-b border-zinc-800 pb-4">
+                <div>
+                    <span id="view-post-badge" class="px-3 py-1 rounded-full text-xs font-semibold"></span>
+                    <h3 id="view-post-title" class="text-xl sm:text-2xl font-bold text-white mt-3"></h3>
+                    <p id="view-post-meta" class="text-xs text-zinc-400 mt-1"></p>
+                </div>
+                <button type="button" onclick="closeViewPostModal()" class="text-zinc-400 hover:text-white text-2xl font-bold cursor-pointer">×</button>
+            </div>
+            <div id="view-post-highlight-box" class="bg-indigo-950/40 border border-indigo-800/50 p-3.5 rounded-xl text-sm text-indigo-300 font-medium"></div>
+            <div id="view-post-content" class="text-sm sm:text-base text-zinc-300 leading-relaxed whitespace-pre-line"></div>
+            <div class="flex justify-between items-center pt-4 border-t border-zinc-800">
+                <div id="view-post-link-container"></div>
+                <button type="button" onclick="closeViewPostModal()" class="px-5 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-sm font-medium cursor-pointer">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ĐĂNG NHẬP -->
+    <div id="modal-login" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181c] border border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Đăng nhập hệ thống</h3>
+                <button type="button" onclick="closeLoginModal()" class="text-zinc-400 hover:text-white text-xl font-bold cursor-pointer">×</button>
+            </div>
+
+            <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Tài khoản / Email đăng nhập</label>
+                    <input type="text" id="login-username" required placeholder="Nhập tên tài khoản hoặc email (.edu.vn)" class="w-full px-4 py-2.5 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <p class="text-xs text-zinc-500 mt-1">Admin: <span class="font-mono text-indigo-400 font-semibold">CLBSVNCKH</span></p>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium text-zinc-300">Mật khẩu</label>
+                        <button type="button" onclick="openForgotModal()" class="text-xs text-indigo-400 hover:underline cursor-pointer">Quên mật khẩu?</button>
+                    </div>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-2.5 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <p class="text-xs text-zinc-500 mt-1">Mật khẩu mặc định Admin: <span class="font-mono text-indigo-400 font-semibold">svnckhtks2026</span></p>
+                </div>
+                <div id="login-error" class="text-sm text-red-400 hidden"></div>
+                <div class="flex justify-between items-center pt-2">
+                    <button type="button" onclick="quickAdminLogin()" class="text-xs text-indigo-300 bg-indigo-950/80 border border-indigo-800 hover:bg-indigo-900 px-3 py-2 rounded-lg font-medium cursor-pointer">⚡ Vào nhanh Admin</button>
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="closeLoginModal()" class="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium text-sm cursor-pointer">Hủy</button>
+                        <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Đăng nhập</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM GIẢNG VIÊN -->
+    <div id="modal-add-mentor" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181c] border border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Thêm Giảng viên Hướng dẫn</h3>
+                <button type="button" onclick="closeAddMentorModal()" class="text-zinc-400 hover:text-white text-xl font-bold cursor-pointer">×</button>
+            </div>
+            <form onsubmit="handleAddMentorSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Học hàm / Học vị & Họ tên</label>
+                    <input type="text" id="mentor-name-input" required placeholder="VD: TS. Nguyễn Văn B" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Email trường (.edu.vn)</label>
+                    <input type="email" id="mentor-email-input" required placeholder="VD: b.nv@edu.vn" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Khoa / Viện chuyên môn</label>
+                    <input type="text" id="mentor-dept-input" required placeholder="VD: Khoa Luật / Khoa CNTT" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Chỉ tiêu (Số nhóm)</label>
+                        <input type="number" id="mentor-quota-input" value="3" min="1" max="20" required class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Mật khẩu cấp phát</label>
+                        <input type="text" id="mentor-pass-input" value="GV2026" required class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeAddMentorModal()" class="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium text-sm cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Lưu Giảng viên</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM TÀI LIỆU -->
+    <div id="modal-add-resource" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181c] border border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Thêm Tài liệu / Đề tài mới</h3>
+                <button type="button" onclick="closeAddResourceModal()" class="text-zinc-400 hover:text-white text-xl font-bold cursor-pointer">×</button>
+            </div>
+            <form onsubmit="handleAddResourceSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Phân loại</label>
+                    <select id="res-type-input" onchange="toggleArchiveFields()" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="template">Biểu mẫu Thuyết minh</option>
+                        <option value="archive">Đề tài Đạt giải các năm trước</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Tiêu đề tài liệu / Tên đề tài</label>
+                    <input type="text" id="res-title-input" required placeholder="Nhập tên biểu mẫu hoặc đề tài..." class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div id="archive-extra-fields" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Tác giả & Giải thưởng</label>
+                        <input type="text" id="res-authors-input" placeholder="VD: Nhóm SV Khoa Luật (Giải Nhất cấp Trường)" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-300 mb-1">Năm đạt giải</label>
+                        <input type="text" id="res-year-input" value="2026" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Đường dẫn tải về (URL / Google Drive)</label>
+                    <input type="url" id="res-link-input" required value="https://docs.google.com/" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeAddResourceModal()" class="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium text-sm cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Thêm vào Kho</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL QUÊN MẬT KHẨU -->
+    <div id="modal-forgot" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181c] border border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Khôi phục mật khẩu</h3>
+                <button type="button" onclick="closeForgotModal()" class="text-zinc-400 hover:text-white text-xl font-bold cursor-pointer">×</button>
+            </div>
+            <div id="forgot-step-1" class="space-y-4">
+                <p class="text-sm text-zinc-400">Nhập email hoặc tên tài khoản của bạn để nhận mã xác nhận khôi phục mật khẩu.</p>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Email / Tên tài khoản</label>
+                    <input type="text" id="forgot-email" placeholder="VD: CLBSVNCKH hoặc an.nv@edu.vn" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div id="forgot-error-1" class="text-sm text-red-400 hidden"></div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeForgotModal()" class="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium text-sm cursor-pointer">Hủy</button>
+                    <button type="button" onclick="sendOtpCode()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Gửi mã xác nhận</button>
+                </div>
+            </div>
+
+            <div id="forgot-step-2" class="space-y-4 hidden">
+                <div class="bg-indigo-950/60 border border-indigo-800 p-4 rounded-xl">
+                    <p class="text-xs text-indigo-300">Mã xác nhận 6 chữ số (Mã giả lập để test):</p>
+                    <p class="text-lg font-mono font-bold text-indigo-400 mt-1" id="simulated-otp-display">888999</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Nhập mã xác nhận (OTP)</label>
+                    <input type="text" id="forgot-otp" placeholder="Nhập 6 số OTP" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Mật khẩu mới</label>
+                    <input type="password" id="forgot-new-pass" placeholder="Nhập mật khẩu mới" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div id="forgot-error-2" class="text-sm text-red-400 hidden"></div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeForgotModal()" class="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium text-sm cursor-pointer">Hủy</button>
+                    <button type="button" onclick="verifyAndResetPassword()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Xác nhận đổi mật khẩu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ĐĂNG ĐỀ XUẤT ĐỀ TÀI -->
+    <div id="modal-proposal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181c] border border-zinc-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Đăng ký Đề xuất Đề tài Mới</h3>
+                <button type="button" onclick="closeProposalModal()" class="text-zinc-400 hover:text-white text-xl font-bold cursor-pointer">×</button>
+            </div>
+            <form id="proposal-form" onsubmit="handleProposalSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Tên đề tài</label>
+                    <input type="text" id="prop-title" required placeholder="VD: Nghiên cứu ứng dụng AI trong quản lý rác thải..." class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Tóm tắt ý tưởng (Mục tiêu, phương pháp)</label>
+                    <textarea id="prop-summary" rows="3" required placeholder="Mô tả mục tiêu nghiên cứu và phương pháp thực hiện..." class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Danh sách thành viên (Kèm Khoa / Niên khóa)</label>
+                    <input type="text" id="prop-members" required placeholder="VD: Nguyễn Văn A (CNTT - K18), Trần Thị B (QTKD - K19)" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Giảng viên mong muốn hướng dẫn (Nếu có)</label>
+                    <select id="prop-mentor" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="">-- Chọn Giảng viên (Không bắt buộc) --</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeProposalModal()" class="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium text-sm cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Gửi Đề xuất</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ĐĂNG TIN TÌM ĐỒNG ĐỘI -->
+    <div id="modal-matching" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181c] border border-zinc-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Đăng tin Tìm Đồng đội</h3>
+                <button type="button" onclick="closeMatchingModal()" class="text-zinc-400 hover:text-white text-xl font-bold cursor-pointer">×</button>
+            </div>
+            <form id="matching-form" onsubmit="handleMatchingSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Chủ đề / Ý tưởng sơ bộ</label>
+                    <input type="text" id="match-topic" required placeholder="VD: Xây dựng ứng dụng học ngoại ngữ thông minh..." class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Nội dung tuyển dụng thành viên</label>
+                    <textarea id="match-content" rows="3" required placeholder="VD: Mình đã có 2 bạn làm ý tưởng và báo cáo, cần tuyển thêm 1 bạn làm phần mềm/lập trình..." class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-zinc-300 mb-1">Thông tin liên hệ (Zalo / Facebook / SĐT)</label>
+                    <input type="text" id="match-contact" required placeholder="VD: Zalo: 0912345678 hoặc fb.com/nhomnc" class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeMatchingModal()" class="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium text-sm cursor-pointer">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Đăng Tin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL GỬI LỜI NHẮN / GÓP Ý CỦA GIẢNG VIÊN -->
+    <div id="modal-feedback" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-[#18181c] border border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Gửi Góp ý / Yêu cầu chỉnh sửa</h3>
+                <button type="button" onclick="closeFeedbackModal()" class="text-zinc-400 hover:text-white text-xl font-bold cursor-pointer">×</button>
+            </div>
+            <input type="hidden" id="feedback-proposal-id">
+            <div>
+                <label class="block text-sm font-medium text-zinc-300 mb-1">Nội dung góp ý cho nhóm sinh viên</label>
+                <textarea id="feedback-content" rows="4" required placeholder="Nhập các điểm nhóm cần chỉnh sửa phương pháp hoặc bổ sung tài liệu..." class="w-full px-4 py-2 bg-[#121215] border border-zinc-700 text-white rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button type="button" onclick="closeFeedbackModal()" class="px-4 py-2 border border-zinc-700 rounded-xl text-zinc-300 hover:bg-zinc-800 font-medium text-sm cursor-pointer">Hủy</button>
+                <button type="button" onclick="submitLecturerFeedback()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm shadow-sm cursor-pointer">Gửi Góp ý</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let currentTab = 'home';
+        let currentUser = JSON.parse(localStorage.getItem('nckh_current_user')) || null;
+        let proposalFilter = 'all';
+        let postFilter = 'all';
+        let resourceSubTab = 'templates';
+        let adminSubTab = 'posts';
+
+        // Dữ liệu Bài đăng Trang chủ (Công bố đề tài được duyệt, Nhóm đạt giải, Bài tham khảo)
+        let stateHomePosts = JSON.parse(localStorage.getItem('nckh_home_posts')) || [
+            {
+                id: 'hp1',
+                category: 'award',
+                title: 'Vinh danh Nhóm sinh viên đạt Giải Nhất NCKH Cấp Trường 2026',
+                highlight: 'Nhóm SV Khoa CNTT - GVHD: PGS.TS Nguyễn Văn An',
+                content: 'Chúc mừng nhóm tác giả Nguyễn Văn Hùng và Lê Thị Mai đã xuất sắc bảo vệ thành công đề tài "Nghiên cứu ứng dụng trí tuệ nhân tạo dự báo luồng giao thông đô thị" với số điểm 96/100 từ Hội đồng nghiệm thu.\n\nBài báo cáo toàn văn và slide thuyết trình đã được cập nhật để các khóa sau tham khảo.',
+                date: '03/11/2026',
+                link: 'https://docs.google.com/document/d/example-award'
+            },
+            {
+                id: 'hp2',
+                category: 'approved',
+                title: 'Công bố Quyết định phê duyệt 12 Đề tài NCKH Sinh viên Đợt 1 năm học 2026',
+                highlight: 'Hội đồng Khoa học & Đào tạo Trường',
+                content: 'CLB Sinh viên NCKH trân trọng công bố danh sách các nhóm đề tài đã được Giảng viên hướng dẫn ký duyệt thuyết minh và chính thức bước vào giai đoạn thực hiện nghiên cứu.\n\nCác nhóm có tên trong danh sách vui lòng liên hệ GVHD để nhận lịch sinh hoạt chuyên môn định kỳ.',
+                date: '01/11/2026',
+                link: ''
+            },
+            {
+                id: 'hp3',
+                category: 'reference',
+                title: 'Hướng dẫn cách viết Tổng quan nghiên cứu (Literature Review) đạt chuẩn quốc tế',
+                highlight: 'Tài liệu hướng dẫn chuyên môn - CLB SV NCKH',
+                content: 'Tổng hợp phương pháp tra cứu tài liệu trên Google Scholar, ScienceDirect và cách trích dẫn chuẩn APA 7th Edition giúp sinh viên tránh lỗi đạo văn và nâng cao điểm số phần cơ sở lý thuyết.',
+                date: '28/10/2026',
+                link: 'https://docs.google.com/document/d/example-guide'
+            }
+        ];
+
+        let stateLecturers = JSON.parse(localStorage.getItem('nckh_lecturers')) || [
+            { id: 'l1', email: 'an.nv@edu.vn', name: 'PGS.TS Nguyễn Văn An', dept: 'Khoa Công nghệ Thông tin', maxQuota: 3, currentCount: 1 },
+            { id: 'l2', email: 'minh.tt@edu.vn', name: 'TS. Trần Thị Minh', dept: 'Khoa Quản trị Kinh doanh', maxQuota: 2, currentCount: 2 },
+            { id: 'l3', email: 'nam.lh@edu.vn', name: 'ThS. Lê Hoàng Nam', dept: 'Khoa Kỹ thuật Xây dựng', maxQuota: 3, currentCount: 0 }
+        ];
+
+        let stateProposals = JSON.parse(localStorage.getItem('nckh_proposals')) || [
+            {
+                id: 'p1',
+                title: 'Nghiên cứu ứng dụng trí tuệ nhân tạo dự báo luồng giao thông đô thị',
+                summary: 'Mục tiêu xây dựng mô hình Deep Learning dự báo kẹt xe tại các nút giao trọng điểm TP.HCM.',
+                members: 'Nguyễn Văn Hùng (CNTT - K18), Lê Thị Mai (CNTT - K18)',
+                mentorEmail: 'an.nv@edu.vn',
+                mentorName: 'PGS.TS Nguyễn Văn An',
+                status: 'accepted',
+                feedback: 'Nhóm cần bổ sung thêm bộ dữ liệu thực tế tại các quận trung tâm.'
+            },
+            {
+                id: 'p2',
+                title: 'Giải pháp thúc đẩy chuyển đổi số cho doanh nghiệp SME tại Việt Nam',
+                summary: 'Phân tích các rào cản tài chính và nhân sự, đề xuất khung chiến lược số hóa toàn diện.',
+                members: 'Trần Minh Quân (QTKD - K19)',
+                mentorEmail: '',
+                mentorName: '',
+                status: 'pending',
+                feedback: ''
+            }
+        ];
+
+        let stateMatching = JSON.parse(localStorage.getItem('nckh_matching')) || [
+            {
+                id: 'm1',
+                topic: 'Ứng dụng mobile phát hiện thực phẩm bẩn bằng AI Vision',
+                content: 'Mình đã có ý tưởng và phần khung báo cáo, cần tuyển thêm 1 bạn cứng lập trình Flutter hoặc xử lý hình ảnh.',
+                contact: 'Zalo: 0988776655 (Quân)',
+                author: 'Trần Minh Quân'
+            }
+        ];
+
+        let stateTemplates = JSON.parse(localStorage.getItem('nckh_templates')) || [
+            { id: 't1', title: 'Mẫu Thuyết minh Đề tài NCKH Sinh viên chuẩn (Cấp Trường)', type: 'Biểu mẫu', link: 'https://docs.google.com/document/d/example1' },
+            { id: 't2', title: 'Mẫu Đề xuất Ý tưởng Ngắn gọn (Pitching Deck)', type: 'Biểu mẫu', link: 'https://docs.google.com/document/d/example2' }
+        ];
+
+        let stateArchive = JSON.parse(localStorage.getItem('nckh_archive')) || [
+            { id: 'a1', title: 'Nghiên cứu các giải pháp tối ưu năng lượng tuabin gió trục đứng', authors: 'Nhóm sinh viên Khoa Cơ khí (Giải Nhất cấp Bộ 2025)', year: '2025', link: 'https://docs.google.com/document/d/archive1' },
+            { id: 'a2', title: 'Ứng dụng Blockchain trong quản lý minh bạch quỹ từ thiện học sinh', authors: 'Nguyễn Văn A, Trần Thị B (Giải Nhì cấp Trường 2024)', year: '2024', link: 'https://docs.google.com/document/d/archive2' }
+        ];
+
+        let statePasswords = JSON.parse(localStorage.getItem('nckh_passwords')) || {
+            'CLBSVNCKH': 'svnckhtks2026',
+            'an.nv@edu.vn': 'GV2026',
+            'minh.tt@edu.vn': 'GV2026',
+            'nam.lh@edu.vn': 'GV2026'
+        };
+
+        function saveState() {
+            localStorage.setItem('nckh_home_posts', JSON.stringify(stateHomePosts));
+            localStorage.setItem('nckh_lecturers', JSON.stringify(stateLecturers));
+            localStorage.setItem('nckh_proposals', JSON.stringify(stateProposals));
+            localStorage.setItem('nckh_matching', JSON.stringify(stateMatching));
+            localStorage.setItem('nckh_templates', JSON.stringify(stateTemplates));
+            localStorage.setItem('nckh_archive', JSON.stringify(stateArchive));
+            localStorage.setItem('nckh_passwords', JSON.stringify(statePasswords));
+            localStorage.setItem('nckh_current_user', JSON.stringify(currentUser));
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            const tabs = ['home', 'proposals', 'matching', 'mentors', 'resources', 'admin'];
+            tabs.forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                const navBtn = document.getElementById('nav-' + t);
+                const mobBtn = document.getElementById('nm-' + t);
+                if (el) el.classList.add('hidden');
+                if (navBtn) navBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60 cursor-pointer transition";
+                if (mobBtn) mobBtn.className = "cursor-pointer text-zinc-400";
+            });
+
+            const activeEl = document.getElementById('tab-' + tabId);
+            if (activeEl) activeEl.classList.remove('hidden');
+
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) activeNav.className = "px-3.5 py-2 rounded-lg text-sm font-medium text-indigo-400 bg-[#242438] cursor-pointer transition";
+            const activeMob = document.getElementById('nm-' + tabId);
+            if (activeMob) activeMob.className = "text-indigo-400 font-semibold cursor-pointer";
+
+            renderAll();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderAll() {
+            renderStats();
+            renderHomePosts();
+            renderHomeLists();
+            renderProposals();
+            renderMatching();
+            renderMentors();
+            renderResources();
+            renderHeaderAuth();
+            if (currentTab === 'admin') renderAdminPanel();
+        }
+
+        function renderStats() {
+            document.getElementById('stat-teams').innerText = stateMatching.length + stateProposals.length;
+            document.getElementById('stat-proposals').innerText = stateProposals.length;
+            document.getElementById('stat-mentors').innerText = stateLecturers.length;
+        }
+
+        // --- RENDER BẢNG TIN & BÀI VIẾT TRANG CHỦ ---
+        function getCategoryMeta(cat) {
+            if (cat === 'award') {
+                return { label: '🏆 Nhóm đạt giải NCKH', badgeClass: 'bg-amber-500/15 text-amber-400 border border-amber-500/30' };
+            }
+            if (cat === 'approved') {
+                return { label: '✅ Đề tài được duyệt', badgeClass: 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' };
+            }
+            return { label: '📚 Bài viết Tham khảo', badgeClass: 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/30' };
+        }
+
+        function setPostFilter(filter) {
+            postFilter = filter;
+            ['all', 'approved', 'award', 'reference'].forEach(f => {
+                const btn = document.getElementById('post-filter-' + f);
+                if (btn) {
+                    btn.className = f === filter
+                        ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white cursor-pointer transition"
+                        : "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 cursor-pointer transition";
+                }
+            });
+            renderHomePosts();
+        }
+
+        function renderHomePosts() {
+            const adminBtnContainer = document.getElementById('home-admin-post-action');
+            if (currentUser && currentUser.role === 'admin') {
+                adminBtnContainer.innerHTML = `
+                    <button type="button" onclick="openHomePostModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-md transition cursor-pointer">
+                        + Đăng bài Công bố / Tham khảo
+                    </button>
+                `;
+            } else {
+                adminBtnContainer.innerHTML = '';
+            }
+
+            const grid = document.getElementById('home-posts-grid');
+            let filtered = stateHomePosts;
+            if (postFilter !== 'all') {
+                filtered = stateHomePosts.filter(p => p.category === postFilter);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-3 py-8 text-center text-zinc-500 text-sm">Chưa có bài đăng nào trong chuyên mục này.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(post => {
+                const meta = getCategoryMeta(post.category);
+                const isAdmin = currentUser && currentUser.role === 'admin';
+                return `
+                    <div class="bg-[#121215] border border-zinc-800/90 hover:border-zinc-700 rounded-2xl p-5 flex flex-col justify-between space-y-4 transition group">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center gap-2">
+                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${meta.badgeClass}">${meta.label}</span>
+                                <span class="text-xs text-zinc-500">${post.date}</span>
+                            </div>
+                            <h4 onclick="openViewPostModal('${post.id}')" class="font-bold text-base text-white group-hover:text-indigo-400 transition cursor-pointer line-clamp-2">${post.title}</h4>
+                            ${post.highlight ? `<p class="text-xs font-medium text-indigo-300 bg-indigo-950/40 border border-indigo-900/50 px-3 py-1.5 rounded-lg">${post.highlight}</p>` : ''}
+                            <p class="text-xs text-zinc-400 leading-relaxed line-clamp-3">${post.content}</p>
+                        </div>
+                        <div class="flex items-center justify-between pt-3 border-t border-zinc-800/80">
+                            <button type="button" onclick="openViewPostModal('${post.id}')" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 cursor-pointer">
+                                Đọc chi tiết →
+                            </button>
+                            <div class="flex items-center space-x-2">
+                                ${post.link ? `<a href="${post.link}" target="_blank" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-2.5 py-1 rounded-lg">📎 Tài liệu</a>` : ''}
+                                ${isAdmin ? `<button type="button" onclick="deleteHomePost('${post.id}')" class="text-xs bg-red-950/60 text-red-400 hover:bg-red-900/60 px-2.5 py-1 rounded-lg cursor-pointer">🗑 Xóa</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openHomePostModal(defaultCat = 'approved', defaultTitle = '', defaultHighlight = '', defaultContent = '') {
+            document.getElementById('post-category-input').value = defaultCat;
+            document.getElementById('post-title-input').value = defaultTitle;
+            document.getElementById('post-highlight-input').value = defaultHighlight;
+            document.getElementById('post-content-input').value = defaultContent;
+            document.getElementById('post-link-input').value = '';
+            document.getElementById('modal-home-post').classList.remove('hidden');
+        }
+
+        function closeHomePostModal() {
+            document.getElementById('modal-home-post').classList.add('hidden');
+        }
+
+        function handleHomePostSubmit(event) {
+            event.preventDefault();
+            const category = document.getElementById('post-category-input').value;
+            const title = document.getElementById('post-title-input').value.trim();
+            const highlight = document.getElementById('post-highlight-input').value.trim();
+            const content = document.getElementById('post-content-input').value.trim();
+            const link = document.getElementById('post-link-input').value.trim();
+
+            const today = new Date().toLocaleDateString('vi-VN');
+            stateHomePosts.unshift({
+                id: 'hp_' + Date.now(),
+                category,
+                title,
+                highlight,
+                content,
+                date: today,
+                link
+            });
+
+            saveState();
+            closeHomePostModal();
+            renderAll();
+            showToast('Đã đăng bài viết mới lên Trang chủ!');
+        }
+
+        function deleteHomePost(id) {
+            stateHomePosts = stateHomePosts.filter(p => p.id !== id);
+            saveState();
+            renderAll();
+            showToast('Đã xóa bài viết khỏi Trang chủ.');
+        }
+
+        function openViewPostModal(id) {
+            const post = stateHomePosts.find(p => p.id === id);
+            if (!post) return;
+            const meta = getCategoryMeta(post.category);
+            const badgeEl = document.getElementById('view-post-badge');
+            badgeEl.className = `px-3 py-1 rounded-full text-xs font-semibold ${meta.badgeClass}`;
+            badgeEl.innerText = meta.label;
+
+            document.getElementById('view-post-title').innerText = post.title;
+            document.getElementById('view-post-meta').innerText = `Đăng ngày: ${post.date} • Ban Quản trị NCKH Hub`;
+
+            const hlBox = document.getElementById('view-post-highlight-box');
+            if (post.highlight) {
+                hlBox.innerText = '📌 ' + post.highlight;
+                hlBox.classList.remove('hidden');
+            } else {
+                hlBox.classList.add('hidden');
+            }
+
+            document.getElementById('view-post-content').innerText = post.content;
+
+            const linkContainer = document.getElementById('view-post-link-container');
+            if (post.link) {
+                linkContainer.innerHTML = `<a href="${post.link}" target="_blank" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold">📎 Mở Tài liệu / Bài tham khảo đính kèm</a>`;
+            } else {
+                linkContainer.innerHTML = '';
+            }
+
+            document.getElementById('modal-view-post').classList.remove('hidden');
+        }
+
+        function closeViewPostModal() {
+            document.getElementById('modal-view-post').classList.add('hidden');
+        }
+
+        // Công bố nhanh 1 đề tài đã duyệt lên Trang chủ (Dành cho Admin)
+        function announceProposalToHome(propId) {
+            const p = stateProposals.find(item => item.id === propId);
+            if (!p) return;
+            openHomePostModal(
+                'approved',
+                `Công bố phê duyệt đề tài: ${p.title}`,
+                `Thực hiện: ${p.members} | GVHD: ${p.mentorName || 'Đang phân công'}`,
+                `Đề tài "${p.title}" đã được phê duyệt thuyết minh.\n\nTóm tắt nội dung nghiên cứu: ${p.summary}\n\nNhóm tác giả: ${p.members}.\nGiảng viên hướng dẫn: ${p.mentorName || 'Ban chuyên môn CLB'}.`
+            );
+        }
+
+        function renderHomeLists() {
+            const hmList = document.getElementById('home-matching-list');
+            if (stateMatching.length === 0) {
+                hmList.innerHTML = `<p class="text-sm text-zinc-500 text-center py-4">Chưa có bài đăng tìm đồng đội nào.</p>`;
+            } else {
+                hmList.innerHTML = stateMatching.slice(0, 3).map(m => `
+                    <div class="p-4 rounded-xl border border-zinc-800 bg-[#121215] space-y-2">
+                        <h4 class="font-semibold text-white text-sm">${m.topic}</h4>
+                        <p class="text-xs text-zinc-400">${m.content}</p>
+                        <div class="flex justify-between items-center text-xs text-zinc-500 pt-1">
+                            <span>👤 ${m.author}</span>
+                            <span class="font-medium text-indigo-400">📞 ${m.contact}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const hpList = document.getElementById('home-proposals-list');
+            if (stateProposals.length === 0) {
+                hpList.innerHTML = `<p class="text-sm text-zinc-500 text-center py-4">Chưa có đề tài nào được gửi.</p>`;
+            } else {
+                hpList.innerHTML = stateProposals.slice(0, 3).map(p => `
+                    <div class="p-4 rounded-xl border border-zinc-800 bg-[#121215] space-y-2">
+                        <div class="flex justify-between items-start gap-2">
+                            <h4 class="font-semibold text-white text-sm">${p.title}</h4>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${p.status === 'accepted' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/60' : 'bg-amber-950 text-amber-400 border border-amber-800/60'}">
+                                ${p.status === 'accepted' ? '🟢 Đã có GV' : '🟡 Đang chờ'}
+                            </span>
+                        </div>
+                        <p class="text-xs text-zinc-400">${p.summary}</p>
+                        <p class="text-xs text-zinc-500">GVHD: ${p.mentorName || 'Chưa nhận'}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function setProposalFilter(filter) {
+            proposalFilter = filter;
+            ['all', 'pending', 'accepted'].forEach(f => {
+                const btn = document.getElementById('p-filter-' + f);
+                if (btn) btn.className = f === filter ? "px-4 py-2 rounded-xl text-sm font-medium bg-[#242438] text-indigo-400 cursor-pointer" : "px-4 py-2 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 cursor-pointer";
+            });
+            renderProposals();
+        }
+
+        function renderProposals() {
+            const container = document.getElementById('proposals-container');
+            let filtered = stateProposals;
+            if (proposalFilter === 'pending') filtered = stateProposals.filter(p => p.status === 'pending');
+            if (proposalFilter === 'accepted') filtered = stateProposals.filter(p => p.status === 'accepted');
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="bg-[#18181c] p-8 rounded-2xl border border-zinc-800 text-center text-zinc-500">Không có đề xuất đề tài nào phù hợp với trạng thái này.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(p => {
+                const isAccepted = p.status === 'accepted';
+                let actionHtml = '';
+
+                if (currentUser && currentUser.role === 'lecturer') {
+                    if (!isAccepted) {
+                        actionHtml = `<button type="button" onclick="acceptProposal('${p.id}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-medium shadow-sm transition cursor-pointer">✅ Nhận hướng dẫn</button>`;
+                    } else if (p.mentorEmail === currentUser.email) {
+                        actionHtml = `<button type="button" onclick="openFeedbackModal('${p.id}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium shadow-sm transition cursor-pointer">💬 Gửi góp ý</button>`;
+                    }
+                }
+
+                let announceBtn = '';
+                if (currentUser && currentUser.role === 'admin') {
+                    announceBtn = `<button type="button" onclick="announceProposalToHome('${p.id}')" class="px-3 py-1.5 bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 hover:bg-indigo-900 rounded-lg text-xs font-semibold transition cursor-pointer">📢 Công bố lên Trang chủ</button>`;
+                }
+
+                let deleteBtn = `<button type="button" onclick="deleteProposal('${p.id}')" class="px-3 py-1.5 bg-red-950/60 text-red-400 border border-red-900/50 hover:bg-red-900/60 rounded-lg text-xs font-semibold transition cursor-pointer">🗑 Xóa đề tài</button>`;
+
+                return `
+                    <div class="bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90 space-y-4">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <div>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${isAccepted ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/60' : 'bg-amber-950 text-amber-400 border border-amber-800/60'}">
+                                    ${isAccepted ? '🟢 Đã có Giảng viên hướng dẫn' : '🟡 Đang chờ Giảng viên nhận'}
+                                </span>
+                                <h3 class="font-bold text-lg text-white mt-2">${p.title}</h3>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                ${actionHtml}
+                                ${announceBtn}
+                                ${deleteBtn}
+                            </div>
+                        </div>
+                        <p class="text-sm text-zinc-300 leading-relaxed"><strong class="text-white">Tóm tắt:</strong> ${p.summary}</p>
+                        <div class="flex flex-wrap items-center justify-between text-xs text-zinc-400 pt-2 border-t border-zinc-800 gap-2">
+                            <div>👥 <strong class="text-zinc-200">Thành viên:</strong> ${p.members}</div>
+                            <div>🎓 <strong class="text-zinc-200">GVHD:</strong> ${p.mentorName || 'Chưa có'}</div>
+                        </div>
+                        ${p.feedback ? `<div class="bg-indigo-950/50 border border-indigo-800/60 p-3 rounded-xl text-xs text-indigo-300 mt-2"><strong>Góp ý từ Giảng viên:</strong> ${p.feedback}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMatching() {
+            const container = document.getElementById('matching-container');
+            if (stateMatching.length === 0) {
+                container.innerHTML = `<div class="col-span-2 bg-[#18181c] p-8 rounded-2xl border border-zinc-800 text-center text-zinc-500">Chưa có bài đăng tìm đồng đội nào. Hãy là người đầu tiên đăng tin!</div>`;
+                return;
+            }
+
+            container.innerHTML = stateMatching.map((m, idx) => {
+                return `
+                    <div class="bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90 flex flex-col justify-between space-y-4">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-start gap-2">
+                                <h3 class="font-bold text-base text-white">${m.topic}</h3>
+                                <button type="button" onclick="deleteMatching('${m.id}')" class="px-2.5 py-1 bg-red-950/60 text-red-400 hover:bg-red-900/60 rounded-lg text-xs font-semibold cursor-pointer shrink-0">🗑 Xóa</button>
+                            </div>
+                            <p class="text-sm text-zinc-300 leading-relaxed">${m.content}</p>
+                        </div>
+                        <div class="space-y-3 pt-3 border-t border-zinc-800">
+                            <div class="text-xs text-zinc-400">👤 Đăng bởi: <strong class="text-zinc-200">${m.author}</strong></div>
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-medium text-indigo-400 bg-indigo-950/60 border border-indigo-800/50 px-3 py-1 rounded-full">📞 ${m.contact}</span>
+                                <button type="button" onclick="promoteToProposalByIndex(${idx})" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">
+                                    ⚡ Tạo Đề xuất (Chuyển sang Mục 2)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMentors() {
+            const container = document.getElementById('mentors-container');
+            const adminAction = document.getElementById('admin-mentor-action');
+
+            adminAction.innerHTML = `<button type="button" onclick="openAddMentorModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition cursor-pointer">+ Thêm Giảng viên</button>`;
+
+            if (stateLecturers.length === 0) {
+                container.innerHTML = `<div class="col-span-3 bg-[#18181c] p-8 rounded-2xl border border-zinc-800 text-center text-zinc-500">Danh bạ hiện chưa có giảng viên nào. Hãy bấm "+ Thêm Giảng viên" để tạo mới.</div>`;
+                return;
+            }
+
+            container.innerHTML = stateLecturers.map(l => {
+                return `
+                    <div class="bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90 space-y-4">
+                        <div class="flex justify-between items-start gap-2">
+                            <div>
+                                <h3 class="font-bold text-lg text-white">${l.name}</h3>
+                                <p class="text-xs text-zinc-400 mt-0.5">${l.dept}</p>
+                            </div>
+                            <button type="button" onclick="deleteLecturer('${l.id}', '${l.email}')" class="px-2.5 py-1 bg-red-950/60 text-red-400 hover:bg-red-900/60 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0">
+                                🗑 Xóa GV
+                            </button>
+                        </div>
+                        <div class="space-y-2 text-xs text-zinc-400">
+                            <div>📧 Email: <span class="font-mono text-zinc-200">${l.email}</span></div>
+                            <div class="flex justify-between items-center pt-2">
+                                <span>Chỉ tiêu hướng dẫn:</span>
+                                <span class="font-semibold text-indigo-400">${l.currentCount} / ${l.maxQuota} nhóm</span>
+                            </div>
+                            <div class="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+                                <div class="bg-indigo-500 h-2 rounded-full" style="width: ${Math.min(100, (l.currentCount / l.maxQuota) * 100)}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function setResourceSubTab(sub) {
+            resourceSubTab = sub;
+            document.getElementById('res-tab-templates').className = sub === 'templates' ? "font-semibold text-indigo-400 border-b-2 border-indigo-400 pb-2 cursor-pointer" : "font-semibold text-zinc-400 hover:text-zinc-200 pb-2 cursor-pointer";
+            document.getElementById('res-tab-archive').className = sub === 'archive' ? "font-semibold text-indigo-400 border-b-2 border-indigo-400 pb-2 cursor-pointer" : "font-semibold text-zinc-400 hover:text-zinc-200 pb-2 cursor-pointer";
+            renderResources();
+        }
+
+        function renderResources() {
+            const container = document.getElementById('resources-container');
+            const adminAction = document.getElementById('admin-resource-action');
+
+            adminAction.innerHTML = `<button type="button" onclick="openAddResourceModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition cursor-pointer">+ Thêm Tài liệu / Đề tài</button>`;
+
+            if (resourceSubTab === 'templates') {
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                        ${stateTemplates.map(t => `
+                            <div class="bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90 flex justify-between items-center gap-4">
+                                <div>
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-950 text-indigo-400 border border-indigo-800/50">${t.type}</span>
+                                    <h4 class="font-bold text-base text-white mt-2">${t.title}</h4>
+                                </div>
+                                <div class="flex items-center space-x-2 shrink-0">
+                                    <a href="${t.link}" target="_blank" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-xl shadow-sm transition">Tải về</a>
+                                    <button type="button" onclick="deleteTemplate('${t.id}')" class="px-2.5 py-2 bg-red-950/60 text-red-400 hover:bg-red-900/60 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 gap-4 mt-6">
+                        ${stateArchive.map(a => `
+                            <div class="bg-[#18181c] p-6 rounded-2xl border border-zinc-800/90 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div>
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-400 border border-emerald-800/60">Năm ${a.year}</span>
+                                    <h4 class="font-bold text-lg text-white mt-2">${a.title}</h4>
+                                    <p class="text-xs text-zinc-400 mt-1">Tác giả: ${a.authors}</p>
+                                </div>
+                                <div class="flex items-center space-x-2 shrink-0">
+                                    <a href="${a.link}" target="_blank" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-medium rounded-xl transition">Xem Toàn văn</a>
+                                    <button type="button" onclick="deleteArchive('${a.id}')" class="px-2.5 py-2 bg-red-950/60 text-red-400 hover:bg-red-900/60 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        function renderHeaderAuth() {
+            const container = document.getElementById('auth-status-container');
+            if (!currentUser) {
+                container.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <button type="button" onclick="quickAdminLogin()" class="px-3 py-2 bg-amber-950/60 hover:bg-amber-900/70 text-amber-300 border border-amber-800/60 text-xs font-semibold rounded-lg transition cursor-pointer">
+                            ⚡ Bật quyền Admin
+                        </button>
+                        <button type="button" onclick="openLoginModal()" class="inline-flex items-center px-4 py-2 border border-indigo-500/60 text-sm font-medium rounded-lg text-indigo-400 bg-transparent hover:bg-indigo-950/50 transition cursor-pointer">
+                            Đăng nhập
+                        </button>
+                    </div>
+                `;
+            } else if (currentUser.role === 'admin') {
+                container.innerHTML = `
+                    <div class="flex items-center space-x-2.5">
+                        <button type="button" onclick="openHomePostModal()" class="hidden sm:inline-flex px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition cursor-pointer">+ Đăng bài</button>
+                        <button type="button" onclick="switchTab('admin')" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition cursor-pointer">Bảng Admin</button>
+                        <button type="button" onclick="logout()" class="text-xs text-red-400 hover:underline font-medium cursor-pointer">Thoát</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs font-medium text-zinc-300">GV. ${currentUser.name}</span>
+                        <button type="button" onclick="logout()" class="text-xs text-red-400 hover:underline font-medium cursor-pointer">Đăng xuất</button>
+                    </div>
+                `;
+            }
+        }
+
+        function openLoginModal() {
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('modal-login').classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('modal-login').classList.add('hidden');
+        }
+
+        function quickAdminLogin() {
+            currentUser = { role: 'admin', username: 'CLBSVNCKH' };
+            saveState();
+            closeLoginModal();
+            renderAll();
+            showToast('Đã bật quyền Admin! Bạn có thể đăng bài công bố lên Trang chủ.');
+        }
+
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const errEl = document.getElementById('login-error');
+
+            if (username.toUpperCase() === 'CLBSVNCKH' && password === statePasswords['CLBSVNCKH']) {
+                currentUser = { role: 'admin', username: 'CLBSVNCKH' };
+                saveState();
+                closeLoginModal();
+                switchTab('admin');
+                showToast('Đăng nhập Admin thành công!');
+                return;
+            }
+
+            const lecturer = stateLecturers.find(l => l.email.toLowerCase() === username.toLowerCase());
+            if (lecturer && statePasswords[lecturer.email] === password) {
+                currentUser = { role: 'lecturer', email: lecturer.email, name: lecturer.name };
+                saveState();
+                closeLoginModal();
+                switchTab('proposals');
+                showToast('Xin chào ' + lecturer.name);
+                return;
+            }
+
+            errEl.innerText = 'Tên tài khoản hoặc mật khẩu không chính xác!';
+            errEl.classList.remove('hidden');
+        }
+
+        function logout() {
+            currentUser = null;
+            saveState();
+            switchTab('home');
+            showToast('Đã đăng xuất tài khoản.');
+        }
+
+        function openForgotModal() {
+            closeLoginModal();
+            document.getElementById('forgot-email').value = '';
+            document.getElementById('forgot-error-1').classList.add('hidden');
+            document.getElementById('forgot-step-1').classList.remove('hidden');
+            document.getElementById('forgot-step-2').classList.add('hidden');
+            document.getElementById('modal-forgot').classList.remove('hidden');
+        }
+
+        function closeForgotModal() {
+            document.getElementById('modal-forgot').classList.add('hidden');
+        }
+
+        let tempForgotUser = '';
+        function sendOtpCode() {
+            const val = document.getElementById('forgot-email').value.trim();
+            const errEl = document.getElementById('forgot-error-1');
+            if (!val) {
+                errEl.innerText = 'Vui lòng nhập email hoặc tài khoản.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const isAdm = val.toUpperCase() === 'CLBSVNCKH';
+            const lec = stateLecturers.find(l => l.email.toLowerCase() === val.toLowerCase());
+
+            if (!isAdm && !lec) {
+                errEl.innerText = 'Không tìm thấy tài khoản trong hệ thống!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            tempForgotUser = isAdm ? 'CLBSVNCKH' : lec.email;
+            document.getElementById('forgot-step-1').classList.add('hidden');
+            document.getElementById('forgot-step-2').classList.remove('hidden');
+            document.getElementById('simulated-otp-display').innerText = '888999';
+            document.getElementById('forgot-otp').value = '';
+            document.getElementById('forgot-new-pass').value = '';
+        }
+
+        function verifyAndResetPassword() {
+            const otp = document.getElementById('forgot-otp').value.trim();
+            const newPass = document.getElementById('forgot-new-pass').value.trim();
+            const errEl = document.getElementById('forgot-error-2');
+
+            if (otp !== '888999') {
+                errEl.innerText = 'Mã OTP không chính xác!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+            if (!newPass || newPass.length < 4) {
+                errEl.innerText = 'Mật khẩu mới phải có ít nhất 4 ký tự.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            statePasswords[tempForgotUser] = newPass;
+            saveState();
+            closeForgotModal();
+            showToast('Đổi mật khẩu thành công! Hãy đăng nhập lại.');
+            openLoginModal();
+        }
+
+        function openProposalModal() {
+            const select = document.getElementById('prop-mentor');
+            select.innerHTML = '<option value="">-- Chọn Giảng viên (Không bắt buộc) --</option>' + 
+                stateLecturers.map(l => `<option value="${l.email}">${l.name} (${l.dept})</option>`).join('');
+            document.getElementById('prop-title').value = '';
+            document.getElementById('prop-summary').value = '';
+            document.getElementById('prop-members').value = '';
+            document.getElementById('modal-proposal').classList.remove('hidden');
+        }
+
+        function closeProposalModal() {
+            document.getElementById('modal-proposal').classList.add('hidden');
+        }
+
+        function handleProposalSubmit(event) {
+            event.preventDefault();
+            const title = document.getElementById('prop-title').value.trim();
+            const summary = document.getElementById('prop-summary').value.trim();
+            const members = document.getElementById('prop-members').value.trim();
+            const mentorEmail = document.getElementById('prop-mentor').value;
+
+            let mentorName = '';
+            if (mentorEmail) {
+                const lec = stateLecturers.find(l => l.email === mentorEmail);
+                if (lec) {
+                    mentorName = lec.name;
+                    lec.currentCount++;
+                }
+            }
+
+            const newProp = {
+                id: 'p_' + Date.now(),
+                title, summary, members, mentorEmail, mentorName,
+                status: mentorEmail ? 'accepted' : 'pending',
+                feedback: ''
+            };
+
+            stateProposals.unshift(newProp);
+            saveState();
+            closeProposalModal();
+            switchTab('proposals');
+            showToast('Đã đăng ký đề xuất đề tài thành công!');
+        }
+
+        function acceptProposal(id) {
+            const prop = stateProposals.find(p => p.id === id);
+            if (!prop || !currentUser || currentUser.role !== 'lecturer') return;
+
+            const lec = stateLecturers.find(l => l.email === currentUser.email);
+            if (!lec) return;
+
+            if (lec.currentCount >= lec.maxQuota) {
+                showToast('Bạn đã đạt giới hạn số lượng nhóm hướng dẫn tối đa!');
+                return;
+            }
+
+            prop.status = 'accepted';
+            prop.mentorEmail = lec.email;
+            prop.mentorName = lec.name;
+            lec.currentCount++;
+
+            saveState();
+            renderAll();
+            showToast('Đã nhận hướng dẫn đề tài!');
+        }
+
+        function openFeedbackModal(id) {
+            document.getElementById('feedback-proposal-id').value = id;
+            const prop = stateProposals.find(p => p.id === id);
+            document.getElementById('feedback-content').value = prop && prop.feedback ? prop.feedback : '';
+            document.getElementById('modal-feedback').classList.remove('hidden');
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('modal-feedback').classList.add('hidden');
+        }
+
+        function submitLecturerFeedback() {
+            const id = document.getElementById('feedback-proposal-id').value;
+            const content = document.getElementById('feedback-content').value.trim();
+            const prop = stateProposals.find(p => p.id === id);
+            if (prop) {
+                prop.feedback = content;
+                saveState();
+                closeFeedbackModal();
+                renderAll();
+                showToast('Đã gửi góp ý cho nhóm sinh viên!');
+            }
+        }
+
+        function deleteProposal(id) {
+            const prop = stateProposals.find(p => p.id === id);
+            if (prop && prop.mentorEmail) {
+                const lec = stateLecturers.find(l => l.email === prop.mentorEmail);
+                if (lec && lec.currentCount > 0) lec.currentCount--;
+            }
+            stateProposals = stateProposals.filter(p => p.id !== id);
+            saveState();
+            renderAll();
+            showToast('Đã xóa đề xuất đề tài.');
+        }
+
+        function openMatchingModal() {
+            document.getElementById('match-topic').value = '';
+            document.getElementById('match-content').value = '';
+            document.getElementById('match-contact').value = '';
+            document.getElementById('modal-matching').classList.remove('hidden');
+        }
+
+        function closeMatchingModal() {
+            document.getElementById('modal-matching').classList.add('hidden');
+        }
+
+        function handleMatchingSubmit(event) {
+            event.preventDefault();
+            const topic = document.getElementById('match-topic').value.trim();
+            const content = document.getElementById('match-content').value.trim();
+            const contact = document.getElementById('match-contact').value.trim();
+
+            stateMatching.unshift({
+                id: 'm_' + Date.now(),
+                topic, content, contact,
+                author: 'Sinh viên'
+            });
+            saveState();
+            closeMatchingModal();
+            switchTab('matching');
+            showToast('Đã đăng tin tìm đồng đội!');
+        }
+
+        function deleteMatching(id) {
+            stateMatching = stateMatching.filter(m => m.id !== id);
+            saveState();
+            renderAll();
+            showToast('Đã xóa bài đăng tìm đồng đội.');
+        }
+
+        function promoteToProposalByIndex(idx) {
+            const item = stateMatching[idx];
+            if (!item) return;
+            document.getElementById('prop-title').value = item.topic;
+            document.getElementById('prop-summary').value = item.content;
+            document.getElementById('prop-members').value = 'Nhóm sinh viên kết nối từ Tìm đồng đội';
+            const select = document.getElementById('prop-mentor');
+            select.innerHTML = '<option value="">-- Chọn Giảng viên (Không bắt buộc) --</option>' + 
+                stateLecturers.map(l => `<option value="${l.email}">${l.name} (${l.dept})</option>`).join('');
+            document.getElementById('modal-proposal').classList.remove('hidden');
+        }
+
+        function setAdminSubTab(sub) {
+            adminSubTab = sub;
+            ['posts', 'lecturers', 'proposals', 'resources'].forEach(s => {
+                const btn = document.getElementById('adm-tab-' + s);
+                if (btn) btn.className = s === sub ? "px-4 py-2 rounded-xl text-sm font-medium bg-[#242438] text-indigo-400 cursor-pointer" : "px-4 py-2 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 cursor-pointer";
+            });
+            renderAdminPanel();
+        }
+
+        function renderAdminPanel() {
+            const container = document.getElementById('admin-panel-content');
+            if (adminSubTab === 'posts') {
+                container.innerHTML = `
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h3 class="font-bold text-lg text-white">Quản lý Bài viết & Công bố Trang chủ</h3>
+                            <p class="text-xs text-zinc-400 mt-0.5">Đăng thông báo đề tài được duyệt, vinh danh nhóm đạt giải NCKH hoặc chia sẻ bài tham khảo.</p>
+                        </div>
+                        <button type="button" onclick="openHomePostModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer">+ Viết bài mới</button>
+                    </div>
+                    <div class="space-y-3">
+                        ${stateHomePosts.length === 0 ? '<p class="text-sm text-zinc-500">Chưa có bài đăng nào.</p>' : stateHomePosts.map(post => {
+                            const meta = getCategoryMeta(post.category);
+                            return `
+                                <div class="p-4 rounded-xl border border-zinc-800 bg-[#121215] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                    <div class="space-y-1">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold ${meta.badgeClass}">${meta.label}</span>
+                                            <span class="text-xs text-zinc-500">${post.date}</span>
+                                        </div>
+                                        <h4 class="font-semibold text-white">${post.title}</h4>
+                                        ${post.highlight ? `<p class="text-xs text-indigo-400">${post.highlight}</p>` : ''}
+                                    </div>
+                                    <div class="flex items-center space-x-2 shrink-0">
+                                        <button type="button" onclick="openViewPostModal('${post.id}')" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-medium cursor-pointer">Xem</button>
+                                        <button type="button" onclick="deleteHomePost('${post.id}')" class="px-3 py-1.5 bg-red-950/60 text-red-400 hover:bg-red-900/60 rounded-lg text-xs font-semibold cursor-pointer">🗑 Xóa</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            } else if (adminSubTab === 'lecturers') {
+                container.innerHTML = `
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-lg text-white">Quản lý Tài khoản Giảng viên</h3>
+                        <button type="button" onclick="openAddMentorModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer">+ Thêm Giảng viên</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-zinc-300">
+                            <thead class="bg-[#121215] text-zinc-400 uppercase text-xs">
+                                <tr>
+                                    <th class="p-3">Họ và tên</th>
+                                    <th class="p-3">Email</th>
+                                    <th class="p-3">Khoa</th>
+                                    <th class="p-3">Chỉ tiêu (Quota)</th>
+                                    <th class="p-3 text-right">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-800">
+                                ${stateLecturers.map(l => `
+                                    <tr>
+                                        <td class="p-3 font-semibold text-white">${l.name}</td>
+                                        <td class="p-3 font-mono text-zinc-400">${l.email}</td>
+                                        <td class="p-3">${l.dept}</td>
+                                        <td class="p-3">${l.currentCount} / ${l.maxQuota} nhóm</td>
+                                        <td class="p-3 text-right">
+                                            <button type="button" onclick="deleteLecturer('${l.id}', '${l.email}')" class="px-3 py-1 bg-red-950/60 text-red-400 hover:bg-red-900/60 rounded-lg text-xs font-semibold cursor-pointer">🗑 Xóa</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else if (adminSubTab === 'proposals') {
+                container.innerHTML = `
+                    <h3 class="font-bold text-lg text-white mb-6">Kiểm duyệt & Công bố Đề xuất Đề tài</h3>
+                    <div class="space-y-4">
+                        ${stateProposals.length === 0 ? '<p class="text-sm text-zinc-500">Không có đề tài nào.</p>' : stateProposals.map(p => `
+                            <div class="p-4 rounded-xl border border-zinc-800 bg-[#121215] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div>
+                                    <h4 class="font-semibold text-white">${p.title}</h4>
+                                    <p class="text-xs text-zinc-400 mt-1">Thành viên: ${p.members} | GVHD: ${p.mentorName || 'Chưa có'}</p>
+                                </div>
+                                <div class="flex items-center space-x-2 shrink-0">
+                                    <button type="button" onclick="announceProposalToHome('${p.id}')" class="px-3 py-1.5 bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 hover:bg-indigo-900 rounded-lg text-xs font-semibold cursor-pointer">📢 Công bố lên Trang chủ</button>
+                                    <button type="button" onclick="deleteProposal('${p.id}')" class="px-3 py-1.5 bg-red-950/60 text-red-400 hover:bg-red-900/60 rounded-lg text-xs font-semibold cursor-pointer">🗑 Xóa</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-bold text-lg text-white">Quản lý Tài liệu & Đề tài Tham khảo</h3>
+                        <button type="button" onclick="openAddResourceModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer">+ Thêm Tài liệu</button>
+                    </div>
+                    <div class="space-y-4">
+                        ${stateTemplates.map(t => `
+                            <div class="p-4 rounded-xl border border-zinc-800 bg-[#121215] flex justify-between items-center">
+                                <div>
+                                    <span class="text-xs font-semibold bg-indigo-950 text-indigo-400 px-2 py-0.5 rounded">${t.type}</span>
+                                    <h4 class="font-semibold text-white mt-1">${t.title}</h4>
+                                </div>
+                                <button type="button" onclick="deleteTemplate('${t.id}')" class="px-3 py-1.5 bg-red-950/60 text-red-400 hover:bg-red-900/60 rounded-lg text-xs font-semibold cursor-pointer">🗑 Xóa</button>
+                            </div>
+                        `).join('')}
+                        ${stateArchive.map(a => `
+                            <div class="p-4 rounded-xl border border-zinc-800 bg-[#121215] flex justify-between items-center">
+                                <div>
+                                    <span class="text-xs font-semibold bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">Giải thưởng ${a.year}</span>
+                                    <h4 class="font-semibold text-white mt-1">${a.title}</h4>
+                                </div>
+                                <button type="button" onclick="deleteArchive('${a.id}')" class="px-3 py-1.5 bg-red-950/60 text-red-400 hover:bg-red-900/60 rounded-lg text-xs font-semibold cursor-pointer">🗑 Xóa</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        function openAddMentorModal() {
+            document.getElementById('mentor-name-input').value = '';
+            document.getElementById('mentor-email-input').value = '';
+            document.getElementById('mentor-dept-input').value = '';
+            document.getElementById('mentor-quota-input').value = '3';
+            document.getElementById('mentor-pass-input').value = 'GV2026';
+            document.getElementById('modal-add-mentor').classList.remove('hidden');
+        }
+
+        function closeAddMentorModal() {
+            document.getElementById('modal-add-mentor').classList.add('hidden');
+        }
+
+        function handleAddMentorSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('mentor-name-input').value.trim();
+            const email = document.getElementById('mentor-email-input').value.trim();
+            const dept = document.getElementById('mentor-dept-input').value.trim();
+            const maxQuota = parseInt(document.getElementById('mentor-quota-input').value, 10) || 3;
+            const pass = document.getElementById('mentor-pass-input').value.trim() || 'GV2026';
+
+            stateLecturers.push({
+                id: 'l_' + Date.now(),
+                email,
+                name,
+                dept,
+                maxQuota,
+                currentCount: 0
+            });
+            statePasswords[email] = pass;
+            saveState();
+            closeAddMentorModal();
+            renderAll();
+            showToast('Đã thêm giảng viên: ' + name);
+        }
+
+        function deleteLecturer(id, email) {
+            stateLecturers = stateLecturers.filter(l => l.id !== id && l.email !== email);
+            delete statePasswords[email];
+            stateProposals.forEach(p => {
+                if (p.mentorEmail === email) {
+                    p.mentorEmail = '';
+                    p.mentorName = '';
+                    p.status = 'pending';
+                }
+            });
+            saveState();
+            renderAll();
+            showToast('Đã xóa giảng viên khỏi danh bạ.');
+        }
+
+        function openAddResourceModal() {
+            document.getElementById('res-type-input').value = 'template';
+            document.getElementById('res-title-input').value = '';
+            document.getElementById('res-authors-input').value = '';
+            document.getElementById('res-year-input').value = '2026';
+            document.getElementById('res-link-input').value = 'https://docs.google.com/';
+            toggleArchiveFields();
+            document.getElementById('modal-add-resource').classList.remove('hidden');
+        }
+
+        function closeAddResourceModal() {
+            document.getElementById('modal-add-resource').classList.add('hidden');
+        }
+
+        function toggleArchiveFields() {
+            const type = document.getElementById('res-type-input').value;
+            const extra = document.getElementById('archive-extra-fields');
+            if (type === 'archive') {
+                extra.classList.remove('hidden');
+            } else {
+                extra.classList.add('hidden');
+            }
+        }
+
+        function handleAddResourceSubmit(event) {
+            event.preventDefault();
+            const type = document.getElementById('res-type-input').value;
+            const title = document.getElementById('res-title-input').value.trim();
+            const link = document.getElementById('res-link-input').value.trim();
+
+            if (type === 'archive') {
+                const authors = document.getElementById('res-authors-input').value.trim() || 'Nhóm sinh viên';
+                const year = document.getElementById('res-year-input').value.trim() || '2026';
+                stateArchive.unshift({ id: 'a_' + Date.now(), title, authors, year, link });
+                setResourceSubTab('archive');
+            } else {
+                stateTemplates.unshift({ id: 't_' + Date.now(), title, type: 'Biểu mẫu', link });
+                setResourceSubTab('templates');
+            }
+
+            saveState();
+            closeAddResourceModal();
+            renderAll();
+            showToast('Đã thêm tài liệu mới vào kho!');
+        }
+
+        function deleteTemplate(id) {
+            stateTemplates = stateTemplates.filter(t => t.id !== id);
+            saveState();
+            renderAll();
+            showToast('Đã xóa biểu mẫu.');
+        }
+
+        function deleteArchive(id) {
+            stateArchive = stateArchive.filter(a => a.id !== id);
+            saveState();
+            renderAll();
+            showToast('Đã xóa đề tài tham khảo.');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+        });
+    </script>
+</body>
+</html>
