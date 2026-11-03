@@ -6,6 +6,7 @@
     <title>NCKH Hub - Cổng Kết Nối Nghiên Cứu Khoa Học Sinh Viên</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -432,9 +433,8 @@
             </div>
 
             <div id="forgot-step-2" class="space-y-4 hidden">
-                <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl">
-                    <p class="text-xs text-indigo-800">Mã xác nhận 6 chữ số (Mã giả lập để test):</p>
-                    <p class="text-lg font-mono font-bold text-indigo-600 mt-1" id="simulated-otp-display">888999</p>
+                <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+                    <p class="text-xs text-emerald-800 font-medium">✅ Mã xác nhận 6 chữ số đã được gửi tới Gmail của bạn. Vui lòng kiểm tra Hộp thư đến hoặc Thư rác (Spam).</p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Nhập mã xác nhận (OTP)</label>
@@ -1044,20 +1044,98 @@
 
         function logout() { currentUser = null; saveState(); switchTab('home'); showToast('Đã đăng xuất.'); }
 
-        function openForgotModal() { closeLoginModal(); document.getElementById('modal-forgot').classList.remove('hidden'); }
-        function closeForgotModal() { document.getElementById('modal-forgot').classList.add('hidden'); }
+        // --- CẤU HÌNH EMAILJS ---
+        const EMAILJS_PUBLIC_KEY = "xVupsENGWxj-FklhX"; 
+        const EMAILJS_SERVICE_ID = "service_z1an9lf";
+        const EMAILJS_TEMPLATE_ID = "template_a8cubjw";
+        const ADMIN_GMAIL = "hoaprox1307@gmail.com";
+
+        if (window.emailjs) {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        }
+
         let tempForgotUser = '';
+        let generatedOtpCode = '';
+
+        function openForgotModal() {
+            closeLoginModal();
+            document.getElementById('forgot-email').value = '';
+            document.getElementById('forgot-error-1').classList.add('hidden');
+            document.getElementById('forgot-step-1').classList.remove('hidden');
+            document.getElementById('forgot-step-2').classList.add('hidden');
+            document.getElementById('modal-forgot').classList.remove('hidden');
+        }
+
+        function closeForgotModal() {
+            document.getElementById('modal-forgot').classList.add('hidden');
+        }
+
         function sendOtpCode() {
             const val = document.getElementById('forgot-email').value.trim();
             const errEl = document.getElementById('forgot-error-1');
-            const isAdm = val.toUpperCase() === 'CLBSVNCKH';
+            errEl.classList.add('hidden');
+
+            if (!val) {
+                errEl.innerText = 'Vui lòng nhập email hoặc tên tài khoản!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const isAdm = val.toUpperCase() === 'CLBSVNCKH' || val.toLowerCase() === ADMIN_GMAIL.toLowerCase();
             const lec = stateLecturers.find(l => l.email.toLowerCase() === val.toLowerCase());
-            if (!isAdm && !lec) { errEl.innerText = 'Không tìm thấy tài khoản!'; errEl.classList.remove('hidden'); return; }
+
+            if (!isAdm && !lec) {
+                errEl.innerText = 'Không tìm thấy tài khoản hoặc email này trong hệ thống!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
             tempForgotUser = isAdm ? 'CLBSVNCKH' : lec.email;
-            document.getElementById('forgot-step-1').classList.add('hidden');
-            document.getElementById('forgot-step-2').classList.remove('hidden');
+            const targetEmail = isAdm ? ADMIN_GMAIL : lec.email;
+            generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+            showToast('Đang gửi mã OTP về Gmail...');
+
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                to_email: targetEmail,
+                otp_code: generatedOtpCode
+            }).then(() => {
+                document.getElementById('forgot-step-1').classList.add('hidden');
+                document.getElementById('forgot-step-2').classList.remove('hidden');
+                document.getElementById('forgot-otp').value = '';
+                document.getElementById('forgot-new-pass').value = '';
+                showToast('Đã gửi mã OTP tới ' + targetEmail);
+            }).catch((error) => {
+                console.error('Lỗi gửi mail:', error);
+                errEl.innerText = 'Không thể gửi email. Kiểm tra lại Public Key và Template ID!';
+                errEl.classList.remove('hidden');
+            });
         }
+
         function verifyAndResetPassword() {
+            const otp = document.getElementById('forgot-otp').value.trim();
+            const newPass = document.getElementById('forgot-new-pass').value.trim();
+            const errEl = document.getElementById('forgot-error-2');
+            errEl.classList.add('hidden');
+
+            if (!generatedOtpCode || otp !== generatedOtpCode) {
+                errEl.innerText = 'Mã OTP không chính xác!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+            if (!newPass || newPass.length < 6) {
+                errEl.innerText = 'Mật khẩu mới phải có ít nhất 6 ký tự!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            statePasswords[tempForgotUser] = newPass;
+            generatedOtpCode = '';
+            saveState();
+            closeForgotModal();
+            showToast('Đổi mật khẩu thành công! Hãy đăng nhập lại.');
+            openLoginModal();
+        } {
             const otp = document.getElementById('forgot-otp').value.trim();
             const newPass = document.getElementById('forgot-new-pass').value.trim();
             if (otp !== '888999') { alert('OTP không đúng!'); return; }
