@@ -304,7 +304,7 @@
         </div>
     </div>
 
-    <!-- MODAL ĐĂNG NHẬP (ĐÃ LOẠI BỎ TOÀN BỘ GỢI Ý MẬT KHẨU) -->
+    <!-- MODAL ĐĂNG NHẬP -->
     <div id="modal-login" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6">
             <div class="flex justify-between items-center">
@@ -551,7 +551,6 @@
 
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
-        console.log("Firebase initialized successfully for project:", firebaseConfig.projectId);
     </script>
 
     <script>
@@ -568,84 +567,26 @@
                 category: 'award',
                 title: 'Vinh danh Nhóm sinh viên đạt Giải Nhất NCKH Cấp Trường 2026',
                 highlight: 'Nhóm SV Khoa CNTT - GVHD: PGS.TS Nguyễn Văn An',
-                content: 'Chúc mừng nhóm tác giả Nguyễn Văn Hùng và Lê Thị Mai đã xuất sắc bảo vệ thành công đề tài "Nghiên cứu ứng dụng trí tuệ nhân tạo dự báo luồng giao thông đô thị" với số điểm 96/100 từ Hội đồng nghiệm thu.\n\nBài báo cáo toàn văn và slide thuyết trình đã được cập nhật để các khóa sau tham khảo.',
+                content: 'Chúc mừng nhóm tác giả Nguyễn Văn Hùng và Lê Thị Mai đã xuất sắc bảo vệ thành công đề tài "Nghiên cứu ứng dụng trí tuệ nhân tạo dự báo luồng giao thông đô thị" với số điểm 96/100 từ Hội đồng nghiệm thu.',
                 date: '03/11/2026',
                 link: 'https://docs.google.com/document/d/example-award'
-            },
-            {
-                id: 'hp2',
-                category: 'approved',
-                title: 'Công bố Quyết định phê duyệt 12 Đề tài NCKH Sinh viên Đợt 1 năm học 2026',
-                highlight: 'Hội đồng Khoa học & Đào tạo Trường',
-                content: 'CLB Sinh viên NCKH trân trọng công bố danh sách các nhóm đề tài đã được Giảng viên hướng dẫn ký duyệt thuyết minh và chính thức bước vào giai đoạn thực hiện nghiên cứu.',
-                date: '01/11/2026',
-                link: ''
-            },
-            {
-                id: 'hp3',
-                category: 'reference',
-                title: 'Hướng dẫn cách viết Tổng quan nghiên cứu (Literature Review) đạt chuẩn quốc tế',
-                highlight: 'Tài liệu hướng dẫn chuyên môn - CLB SV NCKH',
-                content: 'Tổng hợp phương pháp tra cứu tài liệu trên Google Scholar, ScienceDirect và cách trích dẫn chuẩn APA 7th Edition giúp sinh viên tránh lỗi đạo văn.',
-                date: '28/10/2026',
-                link: 'https://docs.google.com/document/d/example-guide'
             }
         ];
 
         let stateLecturers = JSON.parse(localStorage.getItem('nckh_lecturers')) || [
             { id: 'l1', email: 'an.nv@edu.vn', name: 'PGS.TS Nguyễn Văn An', dept: 'Khoa Công nghệ Thông tin', maxQuota: 3, currentCount: 1 },
-            { id: 'l2', email: 'minh.tt@edu.vn', name: 'TS. Trần Thị Minh', dept: 'Khoa Quản trị Kinh doanh', maxQuota: 2, currentCount: 2 },
-            { id: 'l3', email: 'nam.lh@edu.vn', name: 'ThS. Lê Hoàng Nam', dept: 'Khoa Kỹ thuật Xây dựng', maxQuota: 3, currentCount: 0 }
+            { id: 'l2', email: 'minh.tt@edu.vn', name: 'TS. Trần Thị Minh', dept: 'Khoa Quản trị Kinh doanh', maxQuota: 2, currentCount: 2 }
         ];
 
-        let stateProposals = JSON.parse(localStorage.getItem('nckh_proposals')) || [
-            {
-                id: 'p1',
-                title: 'Nghiên cứu ứng dụng trí tuệ nhân tạo dự báo luồng giao thông đô thị',
-                summary: 'Mục tiêu xây dựng mô hình Deep Learning dự báo kẹt xe tại các nút giao trọng điểm TP.HCM.',
-                members: 'Nguyễn Văn Hùng (CNTT - K18), Lê Thị Mai (CNTT - K18)',
-                mentorEmail: 'an.nv@edu.vn',
-                mentorName: 'PGS.TS Nguyễn Văn An',
-                status: 'accepted',
-                feedback: 'Nhóm cần bổ sung thêm bộ dữ liệu thực tế tại các quận trung tâm.'
-            },
-            {
-                id: 'p2',
-                title: 'Giải pháp thúc đẩy chuyển đổi số cho doanh nghiệp SME tại Việt Nam',
-                summary: 'Phân tích các rào cản tài chính và nhân sự, đề xuất khung chiến lược số hóa toàn diện.',
-                members: 'Trần Minh Quân (QTKD - K19)',
-                mentorEmail: '',
-                mentorName: '',
-                status: 'pending',
-                feedback: ''
-            }
-        ];
-
-        let stateMatching = JSON.parse(localStorage.getItem('nckh_matching')) || [
-            {
-                id: 'm1',
-                topic: 'Ứng dụng mobile phát hiện thực phẩm bẩn bằng AI Vision',
-                content: 'Mình đã có ý tưởng và phần khung báo cáo, cần tuyển thêm 1 bạn cứng lập trình Flutter hoặc xử lý hình ảnh.',
-                contact: 'Zalo: 0988776655 (Quân)',
-                author: 'Trần Minh Quân'
-            }
-        ];
-
-        let stateTemplates = JSON.parse(localStorage.getItem('nckh_templates')) || [
-            { id: 't1', title: 'Mẫu Thuyết minh Đề tài NCKH Sinh viên chuẩn (Cấp Trường)', type: 'Biểu mẫu', link: 'https://docs.google.com/document/d/example1' },
-            { id: 't2', title: 'Mẫu Đề xuất Ý tưởng Ngắn gọn (Pitching Deck)', type: 'Biểu mẫu', link: 'https://docs.google.com/document/d/example2' }
-        ];
-
-        let stateArchive = JSON.parse(localStorage.getItem('nckh_archive')) || [
-            { id: 'a1', title: 'Nghiên cứu các giải pháp tối ưu năng lượng tuabin gió trục đứng', authors: 'Nhóm sinh viên Khoa Cơ khí (Giải Nhất cấp Bộ 2025)', year: '2025', link: 'https://docs.google.com/document/d/archive1' },
-            { id: 'a2', title: 'Ứng dụng Blockchain trong quản lý minh bạch quỹ từ thiện học sinh', authors: 'Nguyễn Văn A, Trần Thị B (Giải Nhì cấp Trường 2024)', year: '2024', link: 'https://docs.google.com/document/d/archive2' }
-        ];
+        let stateProposals = JSON.parse(localStorage.getItem('nckh_proposals')) || [];
+        let stateMatching = JSON.parse(localStorage.getItem('nckh_matching')) || [];
+        let stateTemplates = JSON.parse(localStorage.getItem('nckh_templates')) || [];
+        let stateArchive = JSON.parse(localStorage.getItem('nckh_archive')) || [];
 
         let statePasswords = JSON.parse(localStorage.getItem('nckh_passwords')) || {
             'CLBSVNCKH': 'svnckhtks2026',
             'an.nv@edu.vn': 'GV2026',
-            'minh.tt@edu.vn': 'GV2026',
-            'nam.lh@edu.vn': 'GV2026'
+            'minh.tt@edu.vn': 'GV2026'
         };
 
         function saveState() {
@@ -668,8 +609,7 @@
 
         function switchTab(tabId) {
             currentTab = tabId;
-            const tabs = ['home', 'proposals', 'matching', 'mentors', 'resources', 'admin'];
-            tabs.forEach(t => {
+            ['home', 'proposals', 'matching', 'mentors', 'resources', 'admin'].forEach(t => {
                 const el = document.getElementById('tab-' + t);
                 const navBtn = document.getElementById('nav-' + t);
                 const mobBtn = document.getElementById('nm-' + t);
@@ -983,7 +923,6 @@
             }
         }
 
-        // ĐÃ BỎ NÚT "BẬT QUYỀN ADMIN"
         function renderHeaderAuth() {
             const container = document.getElementById('auth-status-container');
             if (!currentUser) {
@@ -1135,12 +1074,6 @@
             closeForgotModal();
             showToast('Đổi mật khẩu thành công! Hãy đăng nhập lại.');
             openLoginModal();
-        } {
-            const otp = document.getElementById('forgot-otp').value.trim();
-            const newPass = document.getElementById('forgot-new-pass').value.trim();
-            if (otp !== '888999') { alert('OTP không đúng!'); return; }
-            statePasswords[tempForgotUser] = newPass;
-            saveState(); closeForgotModal(); showToast('Đổi mật khẩu thành công!'); openLoginModal();
         }
 
         function openProposalModal() {
