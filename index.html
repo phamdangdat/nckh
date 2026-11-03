@@ -1,225 +1,727 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCKH Hub - Cổng Kết Nối Nghiên Cứu Khoa Học Sinh Viên</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .hidden { display: none !important; }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<!-- FIREBASE SDK & KẾT NỐI FIRESTORE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
-    <!-- Header / Navigation -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
-                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-600/20">N</div>
-                <div>
-                    <h1 class="font-bold text-lg text-slate-900 leading-tight">NCKH Hub</h1>
-                    <p class="text-xs text-slate-500">Cổng Kết Nối Nghiên Cứu Khoa Học</p>
-                </div>
-            </div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCicQL7Iuo1b1cgFWvlNMuSL8Ng52jYycM",
+            authDomain: "nckh-d2798.firebaseapp.com",
+            projectId: "nckh-d2798",
+            storageBucket: "nckh-d2798.firebasestorage.app",
+            messagingSenderId: "511807636507",
+            appId: "1:511807636507:web:b107b2ec3d43c6014da4be",
+            measurementId: "G-RPNYT7GXEZ"
+        };
 
-            <!-- Navigation Tabs -->
-            <nav class="hidden md:flex space-x-1">
-                <button type="button" onclick="switchTab('home')" id="nav-home" class="px-3.5 py-2 rounded-lg text-sm font-medium text-indigo-600 bg-indigo-50 cursor-pointer transition">Trang chủ</button>
-                <button type="button" onclick="switchTab('proposals')" id="nav-proposals" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-100 cursor-pointer transition">Đề xuất Đề tài</button>
-                <button type="button" onclick="switchTab('matching')" id="nav-matching" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-100 cursor-pointer transition">Tìm Đồng đội</button>
-                <button type="button" onclick="switchTab('mentors')" id="nav-mentors" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-100 cursor-pointer transition">Danh bạ Giảng viên</button>
-                <button type="button" onclick="switchTab('resources')" id="nav-resources" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-100 cursor-pointer transition">Kho Tài liệu</button>
-            </nav>
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-            <!-- Right Actions & Auth Status -->
-            <div class="flex items-center space-x-3">
-                <div id="cloud-status" class="hidden sm:flex items-center text-xs text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full font-medium">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span>
-                    <span>Firebase Cloud</span>
-                </div>
-                <div id="auth-status-container"></div>
-            </div>
-        </div>
-    </header>
+        // Khởi tạo dữ liệu mặc định
+        window.defaultHomePosts = [
+            {
+                id: 'hp1',
+                category: 'award',
+                title: 'Vinh danh Nhóm sinh viên đạt Giải Nhất NCKH Cấp Trường 2026',
+                highlight: 'Nhóm SV Khoa CNTT - GVHD: PGS.TS Nguyễn Văn An',
+                content: 'Chúc mừng nhóm tác giả Nguyễn Văn Hùng và Lê Thị Mai đã xuất sắc bảo vệ thành công đề tài nghiên cứu.',
+                date: '03/11/2026',
+                link: ''
+            }
+        ];
+        window.defaultLecturers = [
+            { id: 'l1', email: 'an.nv@edu.vn', name: 'PGS.TS Nguyễn Văn An', dept: 'Khoa Công nghệ Thông tin', maxQuota: 3, currentCount: 1 },
+            { id: 'l2', email: 'minh.tt@edu.vn', name: 'TS. Trần Thị Minh', dept: 'Khoa Quản trị Kinh doanh', maxQuota: 2, currentCount: 2 }
+        ];
 
-    <!-- Mobile Nav Bar -->
-    <div class="md:hidden bg-white border-b border-slate-200 px-4 py-2.5 flex justify-around text-xs font-medium text-slate-600">
-        <button type="button" onclick="switchTab('home')" id="nm-home" class="text-indigo-600 font-semibold cursor-pointer">Trang chủ</button>
-        <button type="button" onclick="switchTab('proposals')" id="nm-proposals" class="cursor-pointer">Đề xuất</button>
-        <button type="button" onclick="switchTab('matching')" id="nm-matching" class="cursor-pointer">Tìm đội</button>
-        <button type="button" onclick="switchTab('mentors')" id="nm-mentors" class="cursor-pointer">Giảng viên</button>
-        <button type="button" onclick="switchTab('resources')" id="nm-resources" class="cursor-pointer">Tài liệu</button>
-    </div>
+        // Hàm đồng bộ lưu lên Firebase Firestore
+        window.saveStateToCloud = async function() {
+            try {
+                const dataToSave = {
+                    homePosts: window.stateHomePosts,
+                    lecturers: window.stateLecturers,
+                    proposals: window.stateProposals,
+                    matching: window.stateMatching,
+                    templates: window.stateTemplates,
+                    archive: window.stateArchive,
+                    passwords: window.statePasswords,
+                    updatedAt: Date.now()
+                };
+                await setDoc(doc(db, "nckh_hub", "shared_data"), dataToSave);
+                console.log("Đã đồng bộ dữ liệu lên Firebase thành công!");
+            } catch (error) {
+                console.error("Lỗi đồng bộ Firebase:", error);
+            }
+        };
 
-    <!-- Toast Notification -->
-    <div id="toast-notification" class="fixed bottom-5 right-5 z-50 hidden bg-indigo-600 text-white px-4 py-3 rounded-xl shadow-xl text-sm font-medium flex items-center space-x-2">
-        <span id="toast-message">Thông báo</span>
-    </div>
+        // Hàm tải dữ liệu từ Firebase Firestore về web
+        window.loadStateFromCloud = async function() {
+            try {
+                const docRef = doc(db, "nckh_hub", "shared_data");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const cloudData = docSnap.data();
+                    window.stateHomePosts = cloudData.homePosts || window.defaultHomePosts;
+                    window.stateLecturers = cloudData.lecturers || window.defaultLecturers;
+                    window.stateProposals = cloudData.proposals || [];
+                    window.stateMatching = cloudData.matching || [];
+                    window.stateTemplates = cloudData.templates || [];
+                    window.stateArchive = cloudData.archive || [];
+                    window.statePasswords = cloudData.passwords || { 'CLBSVNCKH': 'svnckhtks2026', 'an.nv@edu.vn': 'GV2026' };
+                    console.log("Đã tải dữ liệu từ Firebase thành công!");
+                } else {
+                    // Nếu chưa có dữ liệu trên mây, đẩy dữ liệu mẫu lên
+                    window.stateHomePosts = window.defaultHomePosts;
+                    window.stateLecturers = window.defaultLecturers;
+                    window.stateProposals = [];
+                    window.stateMatching = [];
+                    window.stateTemplates = [];
+                    window.stateArchive = [];
+                    window.statePasswords = { 'CLBSVNCKH': 'svnckhtks2026', 'an.nv@edu.vn': 'GV2026' };
+                    await window.saveStateToCloud();
+                }
+            } catch (error) {
+                console.error("Lỗi đọc dữ liệu Firebase, dùng tạm bộ nhớ đệm:", error);
+                window.stateHomePosts = JSON.parse(localStorage.getItem('nckh_home_posts')) || window.defaultHomePosts;
+                window.stateLecturers = JSON.parse(localStorage.getItem('nckh_lecturers')) || window.defaultLecturers;
+                window.stateProposals = JSON.parse(localStorage.getItem('nckh_proposals')) || [];
+                window.stateMatching = JSON.parse(localStorage.getItem('nckh_matching')) || [];
+                window.stateTemplates = JSON.parse(localStorage.getItem('nckh_templates')) || [];
+                window.stateArchive = JSON.parse(localStorage.getItem('nckh_archive')) || [];
+                window.statePasswords = JSON.parse(localStorage.getItem('nckh_passwords')) || { 'CLBSVNCKH': 'svnckhtks2026' };
+            }
+            if (typeof window.initAppAfterLoad === 'function') {
+                window.initAppAfterLoad();
+            }
+        };
 
-    <!-- Main Content Area -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        window.loadStateFromCloud();
+    </script>
 
-        <!-- TAB 1: TRANG CHỦ -->
-        <section id="tab-home" class="space-y-8">
-            <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 rounded-2xl p-8 sm:p-12 text-white shadow-xl">
-                <div class="max-w-3xl">
-                    <span class="bg-white/20 text-white text-xs font-semibold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Nền tảng NCKH Sinh viên</span>
-                    <h2 class="text-3xl sm:text-5xl font-bold tracking-tight mt-5 mb-4 leading-tight">Nơi sinh viên kết nối nhóm và trình bày ý tưởng NCKH tới Giảng viên</h2>
-                    <p class="text-indigo-100 text-base sm:text-lg mb-8 leading-relaxed">Tìm kiếm đồng đội cùng tần số, hoàn thiện hồ sơ đề tài và nhận sự hướng dẫn trực tiếp từ các giảng viên chuyên môn hàng đầu.</p>
-                    <div class="flex flex-wrap gap-4">
-                        <button type="button" onclick="switchTab('matching')" class="bg-white hover:bg-slate-100 text-indigo-600 px-6 py-3.5 rounded-xl font-semibold shadow-md transition cursor-pointer">Tìm đồng đội ngay</button>
-                        <button type="button" onclick="switchTab('proposals')" class="bg-indigo-800/80 hover:bg-indigo-800 text-white border border-indigo-400 px-6 py-3.5 rounded-xl font-semibold transition cursor-pointer">Gửi Đề xuất Đề tài</button>
-                    </div>
-                </div>
-            </div>
+    <script>
+        let currentTab = 'home';
+        let currentUser = JSON.parse(localStorage.getItem('nckh_current_user')) || null;
+        let proposalFilter = 'all';
+        let postFilter = 'all';
+        let resourceSubTab = 'templates';
+        let adminSubTab = 'posts';
 
-            <!-- Thống kê nhanh -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex items-center space-x-4 cursor-pointer hover:border-indigo-400 transition" onclick="switchTab('matching')">
-                    <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 font-bold text-xl">👥</div>
-                    <div>
-                        <p class="text-sm font-medium text-slate-500">Nhóm đã kết nối</p>
-                        <p class="text-2xl font-bold text-slate-900" id="stat-teams">0</p>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex items-center space-x-4 cursor-pointer hover:border-emerald-400 transition" onclick="switchTab('proposals')">
-                    <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 font-bold text-xl">📝</div>
-                    <div>
-                        <p class="text-sm font-medium text-slate-500">Đề tài đã gửi giảng viên</p>
-                        <p class="text-2xl font-bold text-slate-900" id="stat-proposals">0</p>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex items-center space-x-4 cursor-pointer hover:border-amber-400 transition" onclick="switchTab('mentors')">
-                    <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 font-bold text-xl">🎓</div>
-                    <div>
-                        <p class="text-sm font-medium text-slate-500">Giảng viên hướng dẫn</p>
-                        <p class="text-2xl font-bold text-slate-900" id="stat-mentors">0</p>
-                    </div>
-                </div>
-            </div>
+        // Biến toàn cục sẽ được nạp từ Firebase
+        window.stateHomePosts = [];
+        window.stateLecturers = [];
+        window.stateProposals = [];
+        window.stateMatching = [];
+        window.stateTemplates = [];
+        window.stateArchive = [];
+        window.statePasswords = {};
 
-            <!-- BẢNG TIN CÔNG BỐ & BÀI VIẾT THAM KHẢO TRANG CHỦ -->
-            <div class="bg-white rounded-2xl border border-slate-200/90 p-6 sm:p-8 space-y-6 shadow-xs">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 pb-5">
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600 border border-indigo-200">Bảng tin NCKH</span>
-                            <span class="text-xs text-slate-400">Cập nhật liên tục</span>
+        function saveState() {
+            // Lưu dự phòng vào localStorage đồng thời đẩy lên Firebase Cloud
+            localStorage.setItem('nckh_current_user', JSON.stringify(currentUser));
+            if (typeof window.saveStateToCloud === 'function') {
+                window.saveStateToCloud();
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.add('hidden'); }, 3000);
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            ['home', 'proposals', 'matching', 'mentors', 'resources', 'admin'].forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                const navBtn = document.getElementById('nav-' + t);
+                const mobBtn = document.getElementById('nm-' + t);
+                if (el) el.classList.add('hidden');
+                if (navBtn) navBtn.className = "px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-100 cursor-pointer transition";
+                if (mobBtn) mobBtn.className = "cursor-pointer text-slate-600";
+            });
+
+            const activeEl = document.getElementById('tab-' + tabId);
+            if (activeEl) activeEl.classList.remove('hidden');
+
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) activeNav.className = "px-3.5 py-2 rounded-lg text-sm font-medium text-indigo-600 bg-indigo-50 cursor-pointer transition";
+            const activeMob = document.getElementById('nm-' + tabId);
+            if (activeMob) activeMob.className = "text-indigo-600 font-semibold cursor-pointer";
+
+            renderAll();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderAll() {
+            renderStats();
+            renderHomePosts();
+            renderHomeLists();
+            renderProposals();
+            renderMatching();
+            renderMentors();
+            renderResources();
+            renderHeaderAuth();
+            if (currentTab === 'admin') renderAdminPanel();
+        }
+
+        function renderStats() {
+            document.getElementById('stat-teams').innerText = stateMatching.length + stateProposals.length;
+            document.getElementById('stat-proposals').innerText = stateProposals.length;
+            document.getElementById('stat-mentors').innerText = stateLecturers.length;
+        }
+
+        function getCategoryMeta(cat) {
+            if (cat === 'award') return { label: '🏆 Nhóm đạt giải NCKH', badgeClass: 'bg-amber-50 text-amber-700 border border-amber-200' };
+            if (cat === 'approved') return { label: '✅ Đề tài được duyệt', badgeClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200' };
+            return { label: '📚 Bài viết Tham khảo', badgeClass: 'bg-indigo-50 text-indigo-700 border border-indigo-200' };
+        }
+
+        function setPostFilter(filter) {
+            postFilter = filter;
+            ['all', 'approved', 'award', 'reference'].forEach(f => {
+                const btn = document.getElementById('post-filter-' + f);
+                if (btn) {
+                    btn.className = f === filter ? "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white cursor-pointer transition" : "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer transition";
+                }
+            });
+            renderHomePosts();
+        }
+
+        function renderHomePosts() {
+            const adminBtnContainer = document.getElementById('home-admin-post-action');
+            if (currentUser && currentUser.role === 'admin') {
+                adminBtnContainer.innerHTML = `<button type="button" onclick="openHomePostModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-xs transition cursor-pointer">+ Đăng bài Công bố / Tham khảo</button>`;
+            } else {
+                adminBtnContainer.innerHTML = '';
+            }
+
+            const grid = document.getElementById('home-posts-grid');
+            let filtered = stateHomePosts;
+            if (postFilter !== 'all') filtered = stateHomePosts.filter(p => p.category === postFilter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-3 py-8 text-center text-slate-400 text-sm">Chưa có bài đăng nào trong chuyên mục này.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(post => {
+                const meta = getCategoryMeta(post.category);
+                const isAdmin = currentUser && currentUser.role === 'admin';
+                return `
+                    <div class="bg-white border border-slate-200/90 hover:border-slate-300 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-xs transition group">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center gap-2">
+                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${meta.badgeClass}">${meta.label}</span>
+                                <span class="text-xs text-slate-400">${post.date}</span>
+                            </div>
+                            <h4 onclick="openViewPostModal('${post.id}')" class="font-bold text-base text-slate-900 group-hover:text-indigo-600 transition cursor-pointer line-clamp-2">${post.title}</h4>
+                            ${post.highlight ? `<p class="text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg">${post.highlight}</p>` : ''}
+                            <p class="text-xs text-slate-600 leading-relaxed line-clamp-3">${post.content}</p>
                         </div>
-                        <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mt-2">Công bố Đề tài, Giải thưởng & Bài viết Tham khảo</h3>
-                        <p class="text-sm text-slate-500 mt-1">Nơi công bố danh sách các đề tài được duyệt, vinh danh các nhóm đạt giải NCKH và chia sẻ kinh nghiệm nghiên cứu.</p>
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                            <button type="button" onclick="openViewPostModal('${post.id}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 cursor-pointer">Đọc chi tiết →</button>
+                            <div class="flex items-center space-x-2">
+                                ${post.link ? `<a href="${post.link}" target="_blank" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg">📎 Tài liệu</a>` : ''}
+                                ${isAdmin ? `<button type="button" onclick="deleteHomePost('${post.id}')" class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2.5 py-1 rounded-lg cursor-pointer font-medium">🗑 Xóa</button>` : ''}
+                            </div>
+                        </div>
                     </div>
-                    <div id="home-admin-post-action" class="shrink-0"></div>
-                </div>
+                `;
+            }).join('');
+        }
 
-                <div class="flex flex-wrap gap-2">
-                    <button type="button" onclick="setPostFilter('all')" id="post-filter-all" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white cursor-pointer transition">Tất cả bài đăng</button>
-                    <button type="button" onclick="setPostFilter('approved')" id="post-filter-approved" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer transition">✅ Công bố Đề tài được duyệt</button>
-                    <button type="button" onclick="setPostFilter('award')" id="post-filter-award" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer transition">🏆 Nhóm đạt giải NCKH</button>
-                    <button type="button" onclick="setPostFilter('reference')" id="post-filter-reference" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer transition">📚 Bài viết Tham khảo</button>
-                </div>
+        function openHomePostModal() {
+            document.getElementById('post-category-input').value = 'approved';
+            document.getElementById('post-title-input').value = '';
+            document.getElementById('post-highlight-input').value = '';
+            document.getElementById('post-content-input').value = '';
+            document.getElementById('post-link-input').value = '';
+            document.getElementById('modal-home-post').classList.remove('hidden');
+        }
 
-                <div id="home-posts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </div>
+        function closeHomePostModal() { document.getElementById('modal-home-post').classList.add('hidden'); }
 
-            <!-- Hoạt động gần đây -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold text-lg text-slate-900">Nhóm đang tìm đồng đội</h3>
-                        <button type="button" onclick="switchTab('matching')" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 cursor-pointer">Xem tất cả →</button>
+        function handleHomePostSubmit(event) {
+            event.preventDefault();
+            const category = document.getElementById('post-category-input').value;
+            const title = document.getElementById('post-title-input').value.trim();
+            const highlight = document.getElementById('post-highlight-input').value.trim();
+            const content = document.getElementById('post-content-input').value.trim();
+            const link = document.getElementById('post-link-input').value.trim();
+            const today = new Date().toLocaleDateString('vi-VN');
+
+            stateHomePosts.unshift({ id: 'hp_' + Date.now(), category, title, highlight, content, date: today, link });
+            saveState();
+            closeHomePostModal();
+            renderAll();
+            showToast('Đã đăng bài viết mới lên Trang chủ và đồng bộ Cloud!');
+        }
+
+        function deleteHomePost(id) {
+            stateHomePosts = stateHomePosts.filter(p => p.id !== id);
+            saveState();
+            renderAll();
+            showToast('Đã xóa bài viết.');
+        }
+
+        function openViewPostModal(id) {
+            const post = stateHomePosts.find(p => p.id === id);
+            if (!post) return;
+            const meta = getCategoryMeta(post.category);
+            const badgeEl = document.getElementById('view-post-badge');
+            badgeEl.className = `px-3 py-1 rounded-full text-xs font-semibold ${meta.badgeClass}`;
+            badgeEl.innerText = meta.label;
+
+            document.getElementById('view-post-title').innerText = post.title;
+            document.getElementById('view-post-meta').innerText = `Đăng ngày: ${post.date} • Ban Quản trị NCKH Hub`;
+            const hlBox = document.getElementById('view-post-highlight-box');
+            if (post.highlight) { hlBox.innerText = '📌 ' + post.highlight; hlBox.classList.remove('hidden'); } else { hlBox.classList.add('hidden'); }
+            document.getElementById('view-post-content').innerText = post.content;
+            const linkContainer = document.getElementById('view-post-link-container');
+            linkContainer.innerHTML = post.link ? `<a href="${post.link}" target="_blank" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold">📎 Mở Tài liệu đính kèm</a>` : '';
+            document.getElementById('modal-view-post').classList.remove('hidden');
+        }
+
+        function closeViewPostModal() { document.getElementById('modal-view-post').classList.add('hidden'); }
+
+        function announceProposalToHome(propId) {
+            const p = stateProposals.find(item => item.id === propId);
+            if (!p) return;
+            openHomePostModal();
+            document.getElementById('post-category-input').value = 'approved';
+            document.getElementById('post-title-input').value = `Công bố phê duyệt đề tài: ${p.title}`;
+            document.getElementById('post-highlight-input').value = `Thực hiện: ${p.members} | GVHD: ${p.mentorName || 'Đang phân công'}`;
+            document.getElementById('post-content-input').value = `Đề tài "${p.title}" đã được phê duyệt thuyết minh.\n\nTóm tắt nội dung: ${p.summary}\n\nNhóm tác giả: ${p.members}.\nGiảng viên hướng dẫn: ${p.mentorName || 'Ban chuyên môn CLB'}.`;
+        }
+
+        function renderHomeLists() {
+            const hmList = document.getElementById('home-matching-list');
+            hmList.innerHTML = stateMatching.length === 0 ? `<p class="text-sm text-slate-400 text-center py-4">Chưa có bài đăng tìm đồng đội nào.</p>` : stateMatching.slice(0, 3).map(m => `
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+                    <h4 class="font-semibold text-slate-900 text-sm">${m.topic}</h4>
+                    <p class="text-xs text-slate-600">${m.content}</p>
+                    <div class="flex justify-between items-center text-xs text-slate-500 pt-1">
+                        <span>👤 ${m.author}</span>
+                        <span class="font-medium text-indigo-600">📞 ${m.contact}</span>
                     </div>
-                    <div id="home-matching-list" class="space-y-4"></div>
                 </div>
+            `).join('');
 
-                <div class="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-xs">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold text-lg text-slate-900">Đề tài mới gửi giảng viên</h3>
-                        <button type="button" onclick="switchTab('proposals')" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 cursor-pointer">Xem tất cả →</button>
+            const hpList = document.getElementById('home-proposals-list');
+            hpList.innerHTML = stateProposals.length === 0 ? `<p class="text-sm text-slate-400 text-center py-4">Chưa có đề tài nào được gửi.</p>` : stateProposals.slice(0, 3).map(p => `
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-2">
+                    <div class="flex justify-between items-start gap-2">
+                        <h4 class="font-semibold text-slate-900 text-sm">${p.title}</h4>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${p.status === 'accepted' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">${p.status === 'accepted' ? '🟢 Đã có GV' : '🟡 Đang chờ'}</span>
                     </div>
-                    <div id="home-proposals-list" class="space-y-4"></div>
+                    <p class="text-xs text-slate-600">${p.summary}</p>
+                    <p class="text-xs text-slate-500">GVHD: ${p.mentorName || 'Chưa nhận'}</p>
                 </div>
-            </div>
-        </section>
+            `).join('');
+        }
 
-        <!-- TAB 2: ĐỀ XUẤT ĐỀ TÀI -->
-        <section id="tab-proposals" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-900">Đề xuất Đề tài NCKH</h2>
-                    <p class="text-sm text-slate-500 mt-1">Danh sách ý tưởng đã sẵn sàng, gửi tới Giảng viên để xin nhận hướng dẫn.</p>
+        function setProposalFilter(filter) {
+            proposalFilter = filter;
+            ['all', 'pending', 'accepted'].forEach(f => {
+                const btn = document.getElementById('p-filter-' + f);
+                if (btn) btn.className = f === filter ? "px-4 py-2 rounded-xl text-sm font-medium bg-indigo-50 text-indigo-600 cursor-pointer" : "px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 cursor-pointer";
+            });
+            renderProposals();
+        }
+
+        function renderProposals() {
+            const container = document.getElementById('proposals-container');
+            let filtered = stateProposals;
+            if (proposalFilter === 'pending') filtered = stateProposals.filter(p => p.status === 'pending');
+            if (proposalFilter === 'accepted') filtered = stateProposals.filter(p => p.status === 'accepted');
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500">Không có đề xuất đề tài nào.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(p => {
+                const isAccepted = p.status === 'accepted';
+                let actionHtml = '';
+                if (currentUser && currentUser.role === 'lecturer') {
+                    if (!isAccepted) actionHtml = `<button type="button" onclick="acceptProposal('${p.id}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">✅ Nhận hướng dẫn</button>`;
+                    else if (p.mentorEmail === currentUser.email) actionHtml = `<button type="button" onclick="openFeedbackModal('${p.id}')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">💬 Gửi góp ý</button>`;
+                }
+                let announceBtn = (currentUser && currentUser.role === 'admin') ? `<button type="button" onclick="announceProposalToHome('${p.id}')" class="px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 rounded-lg text-xs font-semibold transition cursor-pointer">📢 Công bố Trang chủ</button>` : '';
+                let deleteBtn = `<button type="button" onclick="deleteProposal('${p.id}')" class="px-3 py-1.5 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded-lg text-xs font-semibold transition cursor-pointer">🗑 Xóa</button>`;
+
+                return `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <div>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${isAccepted ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${isAccepted ? '🟢 Đã có Giảng viên hướng dẫn' : '🟡 Đang chờ Giảng viên nhận'}</span>
+                                <h3 class="font-bold text-lg text-slate-900 mt-2">${p.title}</h3>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2">${actionHtml} ${announceBtn} ${deleteBtn}</div>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed"><strong class="text-slate-800">Tóm tắt:</strong> ${p.summary}</p>
+                        <div class="flex flex-wrap items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100 gap-2">
+                            <div>👥 <strong class="text-slate-700">Thành viên:</strong> ${p.members}</div>
+                            <div>🎓 <strong class="text-slate-700">GVHD:</strong> ${p.mentorName || 'Chưa có'}</div>
+                        </div>
+                        ${p.feedback ? `<div class="bg-indigo-50 border border-indigo-100 p-3 rounded-xl text-xs text-indigo-900 mt-2"><strong>Góp ý từ Giảng viên:</strong> ${p.feedback}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMatching() {
+            const container = document.getElementById('matching-container');
+            container.innerHTML = stateMatching.length === 0 ? `<div class="col-span-2 bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500">Chưa có bài đăng tìm đồng đội nào.</div>` : stateMatching.map((m, idx) => `
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between space-y-4">
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start gap-2">
+                            <h3 class="font-bold text-base text-slate-900">${m.topic}</h3>
+                            <button type="button" onclick="deleteMatching('${m.id}')" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-semibold cursor-pointer shrink-0">🗑 Xóa</button>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed">${m.content}</p>
+                    </div>
+                    <div class="space-y-3 pt-3 border-t border-slate-100">
+                        <div class="text-xs text-slate-500">👤 Đăng bởi: <strong class="text-slate-700">${m.author}</strong></div>
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">📞 ${m.contact}</span>
+                            <button type="button" onclick="promoteToProposalByIndex(${idx})" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-medium transition cursor-pointer">⚡ Tạo Đề xuất</button>
+                        </div>
+                    </div>
                 </div>
-                <button type="button" onclick="openProposalModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-xs transition cursor-pointer">
-                    + Đăng ký Đề xuất Mới
-                </button>
-            </div>
+            `).join('');
+        }
 
-            <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
-                <button type="button" onclick="setProposalFilter('all')" id="p-filter-all" class="px-4 py-2 rounded-xl text-sm font-medium bg-indigo-50 text-indigo-600 cursor-pointer">Tất cả</button>
-                <button type="button" onclick="setProposalFilter('pending')" id="p-filter-pending" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 cursor-pointer">Đang chờ nhận (🟡)</button>
-                <button type="button" onclick="setProposalFilter('accepted')" id="p-filter-accepted" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 cursor-pointer">Đã có GV hướng dẫn (🟢)</button>
-            </div>
-
-            <div id="proposals-container" class="grid grid-cols-1 gap-6"></div>
-        </section>
-
-        <!-- TAB 3: TÌM ĐỒNG ĐỘI -->
-        <section id="tab-matching" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-900">Tìm Đồng đội Nghiên cứu Khoa học</h2>
-                    <p class="text-sm text-slate-500 mt-1">Tìm kiếm các mảnh ghép phù hợp hoặc tạo nhóm mới để cùng thực hiện đề tài.</p>
+        function renderMentors() {
+            const container = document.getElementById('mentors-container');
+            document.getElementById('admin-mentor-action').innerHTML = `<button type="button" onclick="openAddMentorModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">+ Thêm Giảng viên</button>`;
+            container.innerHTML = stateLecturers.length === 0 ? `<div class="col-span-3 bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500">Chưa có giảng viên nào.</div>` : stateLecturers.map(l => `
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">${l.name}</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">${l.dept}</p>
+                        </div>
+                        <button type="button" onclick="deleteLecturer('${l.id}', '${l.email}')" class="px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0">🗑 Xóa</button>
+                    </div>
+                    <div class="space-y-2 text-xs text-slate-600">
+                        <div>📧 Email: <span class="font-mono text-slate-800">${l.email}</span></div>
+                        <div class="flex justify-between items-center pt-2">
+                            <span>Chỉ tiêu hướng dẫn:</span>
+                            <span class="font-semibold text-indigo-600">${l.currentCount} / ${l.maxQuota} nhóm</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div class="bg-indigo-600 h-2 rounded-full" style="width: ${Math.min(100, (l.currentCount / l.maxQuota) * 100)}%"></div>
+                        </div>
+                    </div>
                 </div>
-                <button type="button" onclick="openMatchingModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium shadow-xs transition cursor-pointer">
-                    + Đăng tin Tìm Bạn
-                </button>
-            </div>
+            `).join('');
+        }
 
-            <div id="matching-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-        </section>
+        window.initAppAfterLoad = function() {
+            renderAll();
+        };
 
-        <!-- TAB 4: DANH BẠ GIẢNG VIÊN -->
-        <section id="tab-mentors" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-900">Danh bạ Giảng viên Hướng dẫn</h2>
-                    <p class="text-sm text-slate-500 mt-1">Thông tin chuyên ngành và chỉ tiêu nhận nhóm của các Giảng viên.</p>
-                </div>
-                <div id="admin-mentor-action"></div>
-            </div>
+        function setResourceSubTab(sub) {
+            resourceSubTab = sub;
+            document.getElementById('res-tab-templates').className = sub === 'templates' ? "font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer" : "font-semibold text-slate-500 hover:text-slate-800 pb-2 cursor-pointer";
+            document.getElementById('res-tab-archive').className = sub === 'archive' ? "font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer" : "font-semibold text-slate-500 hover:text-slate-800 pb-2 cursor-pointer";
+            renderResources();
+        }
 
-            <div id="mentors-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        </section>
+        function renderResources() {
+            const container = document.getElementById('resources-container');
+            document.getElementById('admin-resource-action').innerHTML = `<button type="button" onclick="openAddResourceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-xs transition cursor-pointer">+ Thêm Tài liệu</button>`;
+            if (resourceSubTab === 'templates') {
+                container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">${stateTemplates.map(t => `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex justify-between items-center gap-4">
+                        <div><span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">${t.type}</span><h4 class="font-bold text-base text-slate-900 mt-2">${t.title}</h4></div>
+                        <div class="flex items-center space-x-2 shrink-0"><a href="${t.link}" target="_blank" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl">Tải về</a><button type="button" onclick="deleteTemplate('${t.id}')" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold">🗑 Xóa</button></div>
+                    </div>
+                `).join('')}</div>`;
+            } else {
+                container.innerHTML = `<div class="grid grid-cols-1 gap-4 mt-6">${stateArchive.map(a => `
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">Năm ${a.year}</span><h4 class="font-bold text-lg text-slate-900 mt-2">${a.title}</h4><p class="text-xs text-slate-500 mt-1">Tác giả: ${a.authors}</p></div>
+                        <div class="flex items-center space-x-2 shrink-0"><a href="${a.link}" target="_blank" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-xl">Xem</a><button type="button" onclick="deleteArchive('${a.id}')" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold">🗑 Xóa</button></div>
+                    </div>
+                `).join('')}</div>`;
+            }
+        }
 
-        <!-- TAB 5: KHO TÀI LIỆU -->
-        <section id="tab-resources" class="hidden space-y-6">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
-                <div>
-                    <h2 class="text-2xl font-bold text-slate-900">Kho Tài liệu & Biểu mẫu NCKH</h2>
-                    <p class="text-sm text-slate-500 mt-1">Tải về biểu mẫu chuẩn và tham khảo các đề tài đạt giải các năm trước.</p>
-                </div>
-                <div id="admin-resource-action"></div>
-            </div>
+        function renderHeaderAuth() {
+            const container = document.getElementById('auth-status-container');
+            if (!currentUser) {
+                container.innerHTML = `
+                    <button type="button" onclick="openLoginModal()" class="inline-flex items-center px-4 py-2 border border-indigo-600 text-sm font-medium rounded-xl text-indigo-600 bg-white hover:bg-indigo-50 transition cursor-pointer shadow-2xs">
+                        Đăng nhập
+                    </button>
+                `;
+            } else if (currentUser.role === 'admin') {
+                container.innerHTML = `
+                    <div class="flex items-center space-x-2.5">
+                        <button type="button" onclick="openHomePostModal()" class="hidden sm:inline-flex px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition cursor-pointer">+ Đăng bài</button>
+                        <button type="button" onclick="switchTab('admin')" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition cursor-pointer">Bảng Admin</button>
+                        <button type="button" onclick="logout()" class="text-xs text-red-600 hover:underline font-medium cursor-pointer">Thoát</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `<div class="flex items-center space-x-3"><span class="text-xs font-medium text-slate-700">GV. ${currentUser.name}</span><button type="button" onclick="logout()" class="text-xs text-red-600 hover:underline font-medium cursor-pointer">Đăng xuất</button></div>`;
+            }
+        }
 
-            <div class="flex space-x-6 border-b border-slate-200 pb-3">
-                <button type="button" onclick="setResourceSubTab('templates')" id="res-tab-templates" class="font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer">Biểu mẫu Thuyết minh</button>
-                <button type="button" onclick="setResourceSubTab('archive')" id="res-tab-archive" class="font-semibold text-slate-500 hover:text-slate-800 pb-2 cursor-pointer">Đề tài Đạt giải Các năm trước</button>
-            </div>
+        function openLoginModal() { 
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('modal-login').classList.remove('hidden'); 
+        }
+        function closeLoginModal() { document.getElementById('modal-login').classList.add('hidden'); }
 
-            <div id="resources-container"></div>
-        </section>
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const errEl = document.getElementById('login-error');
 
-        <!-- TAB 6: ADMIN PANEL -->
-        <section id="tab-admin" class="hidden space-y-6">
-            <div class="bg-gradient-to-r from-indigo-700 to-violet-800 text-white p-6 rounded-2xl shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <span class="bg-indigo-900/60 text-indigo-100 border border-indigo-400/40 text-xs px-3 py-1 rounded-full uppercase tracking-wider">Hệ thống Quản trị CLB</span>
-                    <h2 class="text-2xl font-bold mt-2">Bảng điều khiển Quản trị viên (Admin)</h2>
-                    <p class="text-indigo-100 text-sm mt-1">Đăng bài công bố trang chủ, quản lý giảng viên, kiểm duyệt đề tài và kho tài liệu.</p>
-                </div>
-                <div class="flex items-center space-x-3">
-                    <button type="button" onclick="openHomePostModal
+            if (username.toUpperCase() === 'CLBSVNCKH' && password === statePasswords['CLBSVNCKH']) {
+                currentUser = { role: 'admin', username: 'CLBSVNCKH' };
+                saveState(); 
+                closeLoginModal(); 
+                switchTab('admin'); 
+                showToast('Đăng nhập Admin thành công!'); 
+                return;
+            }
+
+            const lecturer = stateLecturers.find(l => l.email.toLowerCase() === username.toLowerCase());
+            if (lecturer && statePasswords[lecturer.email] === password) {
+                currentUser = { role: 'lecturer', email: lecturer.email, name: lecturer.name };
+                saveState(); 
+                closeLoginModal(); 
+                switchTab('proposals'); 
+                showToast('Xin chào ' + lecturer.name); 
+                return;
+            }
+
+            errEl.innerText = 'Tên tài khoản hoặc mật khẩu không chính xác!';
+            errEl.classList.remove('hidden');
+        }
+
+        function logout() { currentUser = null; saveState(); switchTab('home'); showToast('Đã đăng xuất.'); }
+
+        // --- CẤU HÌNH EMAILJS ---
+        const EMAILJS_PUBLIC_KEY = "xVupsENGWxj-FklhX"; 
+        const EMAILJS_SERVICE_ID = "service_z1an9lf";
+        const EMAILJS_TEMPLATE_ID = "template_a8cubjw";
+        const ADMIN_GMAIL = "hoaprox1307@gmail.com";
+
+        if (window.emailjs) {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        }
+
+        let tempForgotUser = '';
+        let generatedOtpCode = '';
+
+        function openForgotModal() {
+            closeLoginModal();
+            document.getElementById('forgot-email').value = '';
+            document.getElementById('forgot-error-1').classList.add('hidden');
+            document.getElementById('forgot-step-1').classList.remove('hidden');
+            document.getElementById('forgot-step-2').classList.add('hidden');
+            document.getElementById('modal-forgot').classList.remove('hidden');
+        }
+
+        function closeForgotModal() {
+            document.getElementById('modal-forgot').classList.add('hidden');
+        }
+
+        function sendOtpCode() {
+            const val = document.getElementById('forgot-email').value.trim();
+            const errEl = document.getElementById('forgot-error-1');
+            errEl.classList.add('hidden');
+
+            if (!val) {
+                errEl.innerText = 'Vui lòng nhập email hoặc tên tài khoản!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            const isAdm = val.toUpperCase() === 'CLBSVNCKH' || val.toLowerCase() === ADMIN_GMAIL.toLowerCase();
+            const lec = stateLecturers.find(l => l.email.toLowerCase() === val.toLowerCase());
+
+            if (!isAdm && !lec) {
+                errEl.innerText = 'Không tìm thấy tài khoản hoặc email này trong hệ thống!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            tempForgotUser = isAdm ? 'CLBSVNCKH' : lec.email;
+            const targetEmail = isAdm ? ADMIN_GMAIL : lec.email;
+            generatedOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+            showToast('Đang gửi mã OTP về Gmail...');
+
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+                to_email: targetEmail,
+                otp_code: generatedOtpCode
+            }).then(() => {
+                document.getElementById('forgot-step-1').classList.add('hidden');
+                document.getElementById('forgot-step-2').classList.remove('hidden');
+                document.getElementById('forgot-otp').value = '';
+                document.getElementById('forgot-new-pass').value = '';
+                showToast('Đã gửi mã OTP tới ' + targetEmail);
+            }).catch((error) => {
+                console.error('Lỗi gửi mail:', error);
+                errEl.innerText = 'Không thể gửi email. Kiểm tra lại Public Key và Template ID!';
+                errEl.classList.remove('hidden');
+            });
+        }
+
+        function verifyAndResetPassword() {
+            const otp = document.getElementById('forgot-otp').value.trim();
+            const newPass = document.getElementById('forgot-new-pass').value.trim();
+            const errEl = document.getElementById('forgot-error-2');
+            errEl.classList.add('hidden');
+
+            if (!generatedOtpCode || otp !== generatedOtpCode) {
+                errEl.innerText = 'Mã OTP không chính xác!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+            if (!newPass || newPass.length < 6) {
+                errEl.innerText = 'Mật khẩu mới phải có ít nhất 6 ký tự!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            statePasswords[tempForgotUser] = newPass;
+            generatedOtpCode = '';
+            saveState();
+            closeForgotModal();
+            showToast('Đổi mật khẩu thành công! Hãy đăng nhập lại.');
+            openLoginModal();
+        }
+
+        function openProposalModal() {
+            document.getElementById('prop-mentor').innerHTML = '<option value="">-- Chọn Giảng viên (Không bắt buộc) --</option>' + stateLecturers.map(l => `<option value="${l.email}">${l.name}</option>`).join('');
+            document.getElementById('modal-proposal').classList.remove('hidden');
+        }
+        function closeProposalModal() { document.getElementById('modal-proposal').classList.add('hidden'); }
+
+        function handleProposalSubmit(event) {
+            event.preventDefault();
+            const title = document.getElementById('prop-title').value.trim();
+            const summary = document.getElementById('prop-summary').value.trim();
+            const members = document.getElementById('prop-members').value.trim();
+            const mentorEmail = document.getElementById('prop-mentor').value;
+            let mentorName = '';
+            if (mentorEmail) { const lec = stateLecturers.find(l => l.email === mentorEmail); if (lec) { mentorName = lec.name; lec.currentCount++; } }
+            stateProposals.unshift({ id: 'p_' + Date.now(), title, summary, members, mentorEmail, mentorName, status: mentorEmail ? 'accepted' : 'pending', feedback: '' });
+            saveState(); closeProposalModal(); switchTab('proposals'); showToast('Đã gửi đề xuất đề tài!');
+        }
+
+        function acceptProposal(id) {
+            const prop = stateProposals.find(p => p.id === id);
+            const lec = stateLecturers.find(l => l.email === currentUser.email);
+            if (lec.currentCount >= lec.maxQuota) { alert('Đã đạt giới hạn chỉ tiêu!'); return; }
+            prop.status = 'accepted'; prop.mentorEmail = lec.email; prop.mentorName = lec.name; lec.currentCount++;
+            saveState(); renderAll(); showToast('Đã nhận hướng dẫn!');
+        }
+
+        function openFeedbackModal(id) { document.getElementById('feedback-proposal-id').value = id; document.getElementById('modal-feedback').classList.remove('hidden'); }
+        function closeFeedbackModal() { document.getElementById('modal-feedback').classList.add('hidden'); }
+        function submitLecturerFeedback() {
+            const id = document.getElementById('feedback-proposal-id').value;
+            const content = document.getElementById('feedback-content').value.trim();
+            stateProposals.find(p => p.id === id).feedback = content;
+            saveState(); closeFeedbackModal(); renderAll(); showToast('Đã gửi góp ý!');
+        }
+
+        function deleteProposal(id) {
+            const prop = stateProposals.find(p => p.id === id);
+            if (prop && prop.mentorEmail) { const lec = stateLecturers.find(l => l.email === prop.mentorEmail); if (lec && lec.currentCount > 0) lec.currentCount--; }
+            stateProposals = stateProposals.filter(p => p.id !== id);
+            saveState(); renderAll(); showToast('Đã xóa đề xuất.');
+        }
+
+        function openMatchingModal() { document.getElementById('modal-matching').classList.remove('hidden'); }
+        function closeMatchingModal() { document.getElementById('modal-matching').classList.add('hidden'); }
+        function handleMatchingSubmit(event) {
+            event.preventDefault();
+            stateMatching.unshift({ id: 'm_' + Date.now(), topic: document.getElementById('match-topic').value, content: document.getElementById('match-content').value, contact: document.getElementById('match-contact').value, author: 'Sinh viên' });
+            saveState(); closeMatchingModal(); switchTab('matching'); showToast('Đã đăng tin tìm đồng đội!');
+        }
+        function deleteMatching(id) { stateMatching = stateMatching.filter(m => m.id !== id); saveState(); renderAll(); showToast('Đã xóa bài tìm đội.'); }
+        function promoteToProposalByIndex(idx) {
+            const item = stateMatching[idx];
+            document.getElementById('prop-title').value = item.topic;
+            document.getElementById('prop-summary').value = item.content;
+            document.getElementById('prop-members').value = 'Nhóm kết nối từ Tìm đồng đội';
+            document.getElementById('prop-mentor').innerHTML = '<option value="">-- Chọn Giảng viên (Không bắt buộc) --</option>' + stateLecturers.map(l => `<option value="${l.email}">${l.name}</option>`).join('');
+            document.getElementById('modal-proposal').classList.remove('hidden');
+        }
+
+        function setAdminSubTab(sub) {
+            adminSubTab = sub;
+            ['posts', 'lecturers', 'proposals', 'resources'].forEach(s => {
+                const btn = document.getElementById('adm-tab-' + s);
+                if (btn) btn.className = s === sub ? "px-4 py-2 rounded-xl text-sm font-medium bg-indigo-50 text-indigo-600 cursor-pointer" : "px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 cursor-pointer";
+            });
+            renderAdminPanel();
+        }
+
+        function renderAdminPanel() {
+            const container = document.getElementById('admin-panel-content');
+            if (adminSubTab === 'posts') {
+                container.innerHTML = `
+                    <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-900">Quản lý Bài viết & Công bố</h3><button type="button" onclick="openHomePostModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm cursor-pointer">+ Viết bài mới</button></div>
+                    <div class="space-y-3">${stateHomePosts.map(post => `
+                        <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex justify-between items-center">
+                            <div><h4 class="font-semibold text-slate-900">${post.title}</h4><p class="text-xs text-slate-500">${post.date}</p></div>
+                            <button type="button" onclick="deleteHomePost('${post.id}')" class="px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs cursor-pointer">Xóa</button>
+                        </div>
+                    `).join('')}</div>
+                `;
+            } else if (adminSubTab === 'lecturers') {
+                container.innerHTML = `
+                    <div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-900">Quản lý Giảng viên</h3><button type="button" onclick="openAddMentorModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm cursor-pointer">+ Thêm Giảng viên</button></div>
+                    <table class="w-full text-left text-sm text-slate-600"><thead class="bg-slate-100 text-slate-700 uppercase text-xs"><tr><th class="p-3">Tên</th><th class="p-3">Email</th><th class="p-3">Khoa</th><th class="p-3 text-right">Thao tác</th></tr></thead>
+                    <tbody class="divide-y divide-slate-200">${stateLecturers.map(l => `<tr><td class="p-3 font-semibold text-slate-900">${l.name}</td><td class="p-3 font-mono">${l.email}</td><td class="p-3">${l.dept}</td><td class="p-3 text-right"><button type="button" onclick="deleteLecturer('${l.id}','${l.email}')" class="text-red-600 hover:underline text-xs cursor-pointer">Xóa</button></td></tr>`).join('')}</tbody></table>
+                `;
+            } else if (adminSubTab === 'proposals') {
+                container.innerHTML = `<h3 class="font-bold text-lg text-slate-900 mb-6">Kiểm duyệt Đề xuất</h3><div class="space-y-4">${stateProposals.map(p => `
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex justify-between items-center">
+                        <div><h4 class="font-semibold text-slate-900">${p.title}</h4><p class="text-xs text-slate-500">GVHD: ${p.mentorName || 'Chưa có'}</p></div>
+                        <div class="space-x-2"><button type="button" onclick="announceProposalToHome('${p.id}')" class="px-3 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs cursor-pointer">📢 Công bố</button><button type="button" onclick="deleteProposal('${p.id}')" class="px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs cursor-pointer">Xóa</button></div>
+                    </div>
+                `).join('')}</div>`;
+            } else {
+                container.innerHTML = `<div class="flex justify-between items-center mb-6"><h3 class="font-bold text-lg text-slate-900">Kho Tài liệu</h3><button type="button" onclick="openAddResourceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm cursor-pointer">+ Thêm</button></div>
+                <div class="space-y-3">${stateTemplates.map(t => `<div class="p-3 bg-slate-50/60 border border-slate-200 rounded-xl flex justify-between items-center"><span>${t.title}</span><button type="button" onclick="deleteTemplate('${t.id}')" class="text-red-600 hover:underline text-xs cursor-pointer">Xóa</button></div>`).join('')}</div>`;
+            }
+        }
+
+        function openAddMentorModal() { document.getElementById('modal-add-mentor').classList.remove('hidden'); }
+        function closeAddMentorModal() { document.getElementById('modal-add-mentor').classList.add('hidden'); }
+        function handleAddMentorSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('mentor-name-input').value;
+            const email = document.getElementById('mentor-email-input').value;
+            stateLecturers.push({ id: 'l_' + Date.now(), email, name, dept: document.getElementById('mentor-dept-input').value, maxQuota: 3, currentCount: 0 });
+            statePasswords[email] = document.getElementById('mentor-pass-input').value;
+            saveState(); closeAddMentorModal(); renderAll(); showToast('Đã thêm giảng viên và đồng bộ Cloud!');
+        }
+        function deleteLecturer(id, email) { stateLecturers = stateLecturers.filter(l => l.id !== id); delete statePasswords[email]; saveState(); renderAll(); showToast('Đã xóa GV.'); }
+
+        function openAddResourceModal() { document.getElementById('modal-add-resource').classList.remove('hidden'); }
+        function closeAddResourceModal() { document.getElementById('modal-add-resource').classList.add('hidden'); }
+        function handleAddResourceSubmit(event) {
+            event.preventDefault();
+            stateTemplates.unshift({ id: 't_' + Date.now(), title: document.getElementById('res-title-input').value, type: 'Biểu mẫu', link: document.getElementById('res-link-input').value });
+            saveState(); closeAddResourceModal(); renderAll(); showToast('Đã thêm tài liệu!');
+        }
+        function deleteTemplate(id) { stateTemplates = stateTemplates.filter(t => t.id !== id); saveState(); renderAll(); showToast('Đã xóa biểu mẫu.'); }
+        function deleteArchive(id) { stateArchive = stateArchive.filter(a => a.id !== id); saveState(); renderAll(); showToast('Đã xóa đề tài.'); }
+    </script>
+</body>
+</html>
