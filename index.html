@@ -1178,14 +1178,18 @@
                 await setDoc(doc(db, "nckh_resources", item.id), metaItem);
 
                 if (totalChunks > 1) {
+                    const chunkPromises = [];
                     for (let i = 0; i < totalChunks; i++) {
                         const slice = fileData.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-                        await setDoc(doc(db, "nckh_resource_chunks", `${item.id}_part_${i}`), {
-                            resourceId: item.id,
-                            index: i,
-                            data: slice
-                        });
+                        chunkPromises.push(
+                            setDoc(doc(db, "nckh_resource_chunks", `${item.id}_part_${i}`), {
+                                resourceId: item.id,
+                                index: i,
+                                data: slice
+                            })
+                        );
                     }
+                    await Promise.all(chunkPromises);
                 }
                 return true;
             } catch (error) {
@@ -1196,10 +1200,11 @@
 
         window.deleteResourceFromCloud = async function(id, chunkCount = 0) {
             try {
-                await deleteDoc(doc(db, "nckh_resources", id));
+                const tasks = [deleteDoc(doc(db, "nckh_resources", id))];
                 for (let i = 0; i < chunkCount; i++) {
-                    await deleteDoc(doc(db, "nckh_resource_chunks", `${id}_part_${i}`));
+                    tasks.push(deleteDoc(doc(db, "nckh_resource_chunks", `${id}_part_${i}`)));
                 }
+                await Promise.all(tasks);
             } catch (error) {
                 console.error("Lỗi xóa tài liệu trên Cloud:", error);
             }
@@ -1216,13 +1221,12 @@
             if (!fullDataUrl && item.isChunked && item.chunkCount > 1) {
                 if (typeof showToast === 'function') showToast('⏳ Đang tải và ghép các phần dữ liệu từ Cloud...');
                 try {
-                    const parts = [];
+                    const partPromises = [];
                     for (let i = 0; i < item.chunkCount; i++) {
-                        const partSnap = await getDoc(doc(db, "nckh_resource_chunks", `${id}_part_${i}`));
-                        if (partSnap.exists()) {
-                            parts.push(partSnap.data().data || '');
-                        }
+                        partPromises.push(getDoc(doc(db, "nckh_resource_chunks", `${id}_part_${i}`)));
                     }
+                    const snaps = await Promise.all(partPromises);
+                    const parts = snaps.map(snap => snap.exists() ? (snap.data().data || '') : '');
                     fullDataUrl = parts.join('');
                     item.fileData = fullDataUrl;
                 } catch (err) {
@@ -1249,7 +1253,7 @@
             try {
                 const stripFileData = (arr) => (arr || []).map(x => ({
                     ...x,
-                    fileData: x.isChunked ? '' : (x.fileData || '')
+                    fileData: ''
                 }));
 
                 const dataToSave = {
@@ -1342,6 +1346,7 @@
         let resourceSubTab = 'templates';
         let adminSubTab = 'posts';
         let resourceSearchQuery = '';
+        let resourceDisplayLimit = 12;
         let votedItems = {};
 
         window.stateHomePosts = [];
@@ -1355,15 +1360,27 @@
         window.statePasswords = {};
 
         function saveState() {
+            const stripHeavy = (arr) => (arr || []).map(item => {
+                const { fileData, feedbackFileData, ...rest } = item;
+                return rest;
+            });
+            const stripPostsHeavy = (arr) => (arr || []).map(post => {
+                const { docData, imageUrl, ...rest } = post;
+                return {
+                    ...rest,
+                    imageUrl: (imageUrl && imageUrl.length > 200000) ? '' : (imageUrl || '')
+                };
+            });
+
             try {
                 localStorage.setItem('nckh_current_user', JSON.stringify(currentUser));
-                localStorage.setItem('nckh_home_posts', JSON.stringify(window.stateHomePosts || []));
+                localStorage.setItem('nckh_home_posts', JSON.stringify(stripPostsHeavy(window.stateHomePosts)));
                 localStorage.setItem('nckh_lecturers', JSON.stringify(window.stateLecturers || []));
-                localStorage.setItem('nckh_proposals', JSON.stringify(window.stateProposals || []));
+                localStorage.setItem('nckh_proposals', JSON.stringify(stripHeavy(window.stateProposals)));
                 localStorage.setItem('nckh_matching', JSON.stringify(window.stateMatching || []));
-                localStorage.setItem('nckh_templates', JSON.stringify(window.stateTemplates || []));
-                localStorage.setItem('nckh_archive', JSON.stringify(window.stateArchive || []));
-                localStorage.setItem('nckh_syllabi', JSON.stringify(window.stateSyllabi || []));
+                localStorage.setItem('nckh_templates', JSON.stringify(stripHeavy(window.stateTemplates)));
+                localStorage.setItem('nckh_archive', JSON.stringify(stripHeavy(window.stateArchive)));
+                localStorage.setItem('nckh_syllabi', JSON.stringify(stripHeavy(window.stateSyllabi)));
                 localStorage.setItem('nckh_passwords', JSON.stringify(window.statePasswords || {}));
             } catch (e) {
                 console.warn("LocalStorage quota exceeded:", e);
@@ -1948,6 +1965,7 @@
 
         function setResourceSubTab(sub) {
             resourceSubTab = sub;
+            resourceDisplayLimit = 12;
             ['templates', 'archive', 'syllabi'].forEach(k => {
                 const btn = document.getElementById('res-tab-' + k);
                 if (btn) {
@@ -1961,6 +1979,12 @@
 
         function handleResourceSearch(val) {
             resourceSearchQuery = (val || '').trim().toLowerCase();
+            resourceDisplayLimit = 12;
+            renderResources();
+        }
+
+        function loadMoreResources() {
+            resourceDisplayLimit += 12;
             renderResources();
         }
 
@@ -1993,7 +2017,10 @@
                     container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500 mt-4">Chưa có biểu mẫu nào phù hợp.</div>`;
                     return;
                 }
-                container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">${list.map(t => `
+                const visibleList = list.slice(0, resourceDisplayLimit);
+                const hasMore = list.length > visibleList.length;
+
+                container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">${visibleList.map(t => `
                     <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap gap-1.5">
@@ -2007,7 +2034,7 @@
                             ${isAdmin ? `<button type="button" onclick="deleteTemplate('${t.id}', ${t.chunkCount || 0})" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button>` : ''}
                         </div>
                     </div>
-                `).join('')}</div>`;
+                `).join('')}</div>${hasMore ? `<div class="mt-6 text-center"><button type="button" onclick="loadMoreResources()" class="px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl shadow-2xs cursor-pointer">Xem thêm (${list.length - visibleList.length} tài liệu còn lại)</button></div>` : ''}`;
             } else if (resourceSubTab === 'archive') {
                 let list = window.stateArchive || [];
                 if (facFilter !== 'all') list = list.filter(a => (a.faculty || 'Chung toàn trường') === facFilter);
@@ -2017,7 +2044,10 @@
                     container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500 mt-4">Chưa có đề tài đạt giải nào trong danh mục này.</div>`;
                     return;
                 }
-                container.innerHTML = `<div class="grid grid-cols-1 gap-4 mt-4">${list.map(a => `
+                const visibleList = list.slice(0, resourceDisplayLimit);
+                const hasMore = list.length > visibleList.length;
+
+                container.innerHTML = `<div class="grid grid-cols-1 gap-4 mt-4">${visibleList.map(a => `
                     <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap gap-2">
@@ -2031,7 +2061,7 @@
                             ${isAdmin ? `<button type="button" onclick="deleteArchive('${a.id}', ${a.chunkCount || 0})" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button>` : ''}
                         </div>
                     </div>
-                `).join('')}</div>`;
+                `).join('')}</div>${hasMore ? `<div class="mt-6 text-center"><button type="button" onclick="loadMoreResources()" class="px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl shadow-2xs cursor-pointer">Xem thêm (${list.length - visibleList.length} đề tài còn lại)</button></div>` : ''}`;
             } else {
                 let list = window.stateSyllabi || [];
                 if (facFilter !== 'all') list = list.filter(s => (s.faculty || 'Chung toàn trường') === facFilter);
@@ -2041,7 +2071,10 @@
                     container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500 mt-4">Chưa có đề cương môn học nào trong danh mục này.</div>`;
                     return;
                 }
-                container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">${list.map(s => `
+                const visibleList = list.slice(0, resourceDisplayLimit);
+                const hasMore = list.length > visibleList.length;
+
+                container.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">${visibleList.map(s => `
                     <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap gap-2">
@@ -2055,7 +2088,7 @@
                             ${isAdmin ? `<button type="button" onclick="deleteSyllabus('${s.id}', ${s.chunkCount || 0})" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button>` : ''}
                         </div>
                     </div>
-                `).join('')}</div>`;
+                `).join('')}</div>${hasMore ? `<div class="mt-6 text-center"><button type="button" onclick="loadMoreResources()" class="px-5 py-2.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl shadow-2xs cursor-pointer">Xem thêm (${list.length - visibleList.length} đề cương còn lại)</button></div>` : ''}`;
             }
         }
 
