@@ -636,13 +636,13 @@
             </div>
 
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-3">
-                <div class="flex flex-wrap gap-4 sm:gap-6 text-sm">
-                    <button type="button" onclick="setResourceSubTab('templates')" id="res-tab-templates" class="font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer">Biểu mẫu Thuyết minh</button>
-                    <button type="button" onclick="setResourceSubTab('archive')" id="res-tab-archive" class="font-semibold text-slate-500 hover:text-slate-800 pb-2 cursor-pointer">Đề tài Đạt giải Các năm</button>
-                    <button type="button" onclick="setResourceSubTab('syllabi')" id="res-tab-syllabi" class="font-semibold text-slate-500 hover:text-slate-800 pb-2 cursor-pointer">Đề cương Môn học</button>
+                <div class="flex items-center gap-4 sm:gap-6 text-sm w-full md:w-auto overflow-x-auto whitespace-nowrap pb-1 -mb-1">
+                    <button type="button" onclick="setResourceSubTab('templates')" id="res-tab-templates" class="font-semibold text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer shrink-0">Biểu mẫu Thuyết minh</button>
+                    <button type="button" onclick="setResourceSubTab('archive')" id="res-tab-archive" class="font-semibold text-slate-500 hover:text-slate-800 pb-2 cursor-pointer shrink-0">Đề tài Đạt giải Các năm</button>
+                    <button type="button" onclick="setResourceSubTab('syllabi')" id="res-tab-syllabi" class="font-semibold text-slate-500 hover:text-slate-800 pb-2 cursor-pointer shrink-0">Đề cương Môn học</button>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                    <select id="resource-faculty-filter" onchange="renderResources()" class="px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white text-slate-700 font-medium">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+                    <select id="resource-faculty-filter" onchange="renderResources()" class="px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white text-slate-700 font-medium w-full sm:w-auto">
                         <option value="all">🏛️ Tất cả các Khoa</option>
                         <option value="Chung toàn trường">Chung toàn trường</option>
                         <option value="Khoa Lý luận chính trị">Khoa Lý luận chính trị</option>
@@ -656,7 +656,7 @@
                 </div>
             </div>
 
-            <div id="resources-container"></div>
+            <div id="resources-container" class="w-full overflow-x-hidden"></div>
         </section>
 
         <!-- TAB 6: BẢNG QUẢN TRỊ ADMIN -->
@@ -1938,15 +1938,15 @@
                         ? `<a href="${t.fileData}" download="${t.fileName || 'bieu-mau.doc'}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl">📥 Tải file</a>`
                         : `<a href="${t.link || '#'}" target="_blank" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl">🔗 Mở link</a>`;
                     return `
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex justify-between items-center gap-4">
-                            <div>
+                        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div class="min-w-0 w-full">
                                 <div class="flex flex-wrap gap-1.5">
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">${t.type || 'Biểu mẫu'}</span>
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-700">${t.faculty || 'Chung toàn trường'}</span>
                                 </div>
-                                <h4 class="font-bold text-base text-slate-900 mt-2">${t.title}</h4>
+                                <h4 class="font-bold text-base text-slate-900 mt-2 break-words">${t.title}</h4>
                             </div>
-                            <div class="flex items-center space-x-2 shrink-0">
+                            <div class="flex items-center space-x-2 shrink-0 self-end sm:self-center">
                                 ${downloadAction}
                                 ${isAdmin ? `<button type="button" onclick="deleteTemplate('${t.id}')" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button>` : ''}
                             </div>
@@ -1967,15 +1967,15 @@
                         ? `<a href="${a.fileData}" download="${a.fileName || 'de-tai-dat-giai.pdf'}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl">📥 Tải toàn văn</a>`
                         : (a.link ? `<a href="${a.link}" target="_blank" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-medium rounded-xl">🔗 Xem tài liệu</a>` : '');
                     return `
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <div>
+                        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div class="min-w-0 w-full">
                                 <div class="flex flex-wrap gap-2">
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">🏆 Đề tài Đạt giải</span>
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">🏛️ ${a.faculty || 'Chung toàn trường'}</span>
                                 </div>
-                                <h4 class="font-bold text-base text-slate-900 mt-2">${a.title}</h4>
+                                <h4 class="font-bold text-base text-slate-900 mt-2 break-words">${a.title}</h4>
                             </div>
-                            <div class="flex items-center space-x-2 shrink-0">
+                            <div class="flex items-center space-x-2 shrink-0 self-end sm:self-center">
                                 ${viewAction}
                                 ${isAdmin ? `<button type="button" onclick="deleteArchive('${a.id}')" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button>` : ''}
                             </div>
@@ -1996,15 +1996,15 @@
                         ? `<a href="${s.fileData}" download="${s.fileName || 'de-cuong-mon-hoc.pdf'}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl">📥 Tải đề cương</a>`
                         : (s.link ? `<a href="${s.link}" target="_blank" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl">🔗 Mở link</a>` : '');
                     return `
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs flex justify-between items-center gap-4">
-                            <div>
+                        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div class="min-w-0 w-full">
                                 <div class="flex flex-wrap gap-1.5">
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">📘 Đề cương môn học</span>
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-700">${s.faculty || 'Chung toàn trường'}</span>
                                 </div>
-                                <h4 class="font-bold text-base text-slate-900 mt-2">${s.title}</h4>
+                                <h4 class="font-bold text-base text-slate-900 mt-2 break-words">${s.title}</h4>
                             </div>
-                            <div class="flex items-center space-x-2 shrink-0">
+                            <div class="flex items-center space-x-2 shrink-0 self-end sm:self-center">
                                 ${viewAction}
                                 ${isAdmin ? `<button type="button" onclick="deleteSyllabus('${s.id}')" class="px-2.5 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-xs font-semibold cursor-pointer">🗑 Xóa</button>` : ''}
                             </div>
