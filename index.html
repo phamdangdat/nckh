@@ -1127,7 +1127,7 @@
     <!-- FIREBASE SDK & CLOUD SYNC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCicQL7Iuo1b1cgFWvlNMuSL8Ng52jYycM",
@@ -1141,6 +1141,8 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        window.firebaseDb = db;
+        window.firestoreFns = { doc, setDoc, getDoc, collection, getDocs, deleteDoc };
 
         window.defaultHomePosts = [
             {
@@ -1210,23 +1212,26 @@
             { id: 'l3', email: 'hung.lv@hpu.vn', name: 'TS. Lê Văn Hùng', dept: 'Khoa Tội phạm học và Điều tra tội phạm', maxQuota: 3, currentCount: 0 }
         ];
 
-        window.saveStateToCloud = async function() {
+        // Lưu riêng từng tài liệu vào collection "nckh_resources" để không bao giờ bị vượt quá giới hạn 1MB của 1 document Firestore
+        window.saveResourceItemToCloud = async function(item, bucketType) {
             try {
-                const dataToSave = {
-                    homePosts: window.stateHomePosts,
-                    lecturers: window.stateLecturers,
-                    proposals: window.stateProposals,
-                    matching: window.stateMatching,
-                    templates: window.stateTemplates,
-                    archive: window.stateArchive,
-                    voting: window.stateVoting,
-                    passwords: window.statePasswords,
-                    updatedAt: Date.now()
-                };
-                await setDoc(doc(db, "nckh_hub", "shared_data"), dataToSave);
-                console.log("Đã đồng bộ dữ liệu lên Firebase thành công!");
+                const payload = { ...item, bucketType, updatedAt: Date.now() };
+                await setDoc(doc(db, "nckh_resources", item.id), payload);
+                return true;
             } catch (error) {
-                console.error("Lỗi đồng bộ Firebase:", error);
+                console.error("Lỗi lưu file tài liệu lên Cloud:", error);
+                if (typeof showToast === 'function') {
+                    showToast("⚠️ Lỗi lưu file lên Cloud (file quá lớn > 900KB). Hãy dùng Link Google Drive hoặc nén nhỏ file!");
+                }
+                return false;
+            }
+        };
+
+        window.deleteResourceItemFromCloud = async function(itemId) {
+            try {
+                await deleteDoc(doc(db, "nckh_resources", itemId));
+            } catch (error) {
+                console.error("Lỗi xóa tài liệu trên Cloud:", error);
             }
         };
 
@@ -1245,7 +1250,6 @@
                     window.stateSyllabi = cloudData.syllabi || [];
                     window.stateVoting = cloudData.voting || [];
                     window.statePasswords = cloudData.passwords || { 'CLBSVNCKH': 'svnckhtks2026', 'an.nv@edu.vn': 'GV2026', 'minh.tt@edu.vn': 'GV2026' };
-                    console.log("Đã tải dữ liệu từ Firebase thành công!");
                 } else {
                     window.stateHomePosts = window.defaultHomePosts;
                     window.stateLecturers = window.defaultLecturers;
@@ -1258,6 +1262,28 @@
                     window.statePasswords = { 'CLBSVNCKH': 'svnckhtks2026', 'an.nv@edu.vn': 'GV2026', 'minh.tt@edu.vn': 'GV2026' };
                     await window.saveStateToCloud();
                 }
+
+                // Tải thêm các tài liệu lưu riêng lẻ từ collection nckh_resources
+                const resSnap = await getDocs(collection(db, "nckh_resources"));
+                if (!resSnap.empty) {
+                    const tList = [], aList = [], sList = [];
+                    resSnap.forEach(d => {
+                        const item = d.data();
+                        if (item.bucketType === 'archive' || item.type === 'Đề tài đạt giải') aList.push(item);
+                        else if (item.bucketType === 'syllabi' || item.type === 'Đề cương môn học') sList.push(item);
+                        else tList.push(item);
+                    });
+                    // Gộp và loại bỏ trùng lặp theo id
+                    const mergeUnique = (arr1, arr2) => {
+                        const map = new Map();
+                        [...arr1, ...arr2].forEach(x => map.set(x.id, x));
+                        return Array.from(map.values()).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+                    };
+                    window.stateTemplates = mergeUnique(window.stateTemplates, tList);
+                    window.stateArchive = mergeUnique(window.stateArchive, aList);
+                    window.stateSyllabi = mergeUnique(window.stateSyllabi, sList);
+                }
+                console.log("Đã tải dữ liệu từ Firebase thành công!");
             } catch (error) {
                 console.error("Lỗi đọc dữ liệu Firebase, dùng tạm bộ nhớ đệm:", error);
                 window.stateHomePosts = JSON.parse(localStorage.getItem('nckh_home_posts')) || window.defaultHomePosts;
@@ -1277,15 +1303,24 @@
 
         window.saveStateToCloud = async function() {
             try {
+                // Lưu metadata nhẹ vào shared_data để không bao giờ vượt giới hạn 1MB
+                const stripHeavyFile = (arr) => (arr || []).map(item => {
+                    if (item.fileData && item.fileData.length > 200000) {
+                        const { fileData, ...metaOnly } = item;
+                        return metaOnly;
+                    }
+                    return item;
+                });
+
                 const dataToSave = {
-                    homePosts: window.stateHomePosts,
+                    homePosts: stripHeavyFile(window.stateHomePosts),
                     lecturers: window.stateLecturers,
-                    proposals: window.stateProposals,
+                    proposals: stripHeavyFile(window.stateProposals),
                     matching: window.stateMatching,
-                    templates: window.stateTemplates,
-                    archive: window.stateArchive,
-                    syllabi: window.stateSyllabi,
-                    voting: window.stateVoting,
+                    templates: stripHeavyFile(window.stateTemplates),
+                    archive: stripHeavyFile(window.stateArchive),
+                    syllabi: stripHeavyFile(window.stateSyllabi),
+                    voting: stripHeavyFile(window.stateVoting),
                     passwords: window.statePasswords,
                     updatedAt: Date.now()
                 };
@@ -3098,7 +3133,7 @@ Hãy nêu ngắn gọn:
             document.getElementById('modal-add-resource').classList.remove('hidden'); 
         }
         function closeAddResourceModal() { document.getElementById('modal-add-resource').classList.add('hidden'); }
-        function handleAddResourceSubmit(event) {
+        async function handleAddResourceSubmit(event) {
             event.preventDefault();
             const title = document.getElementById('res-title-input').value.trim();
             const type = document.getElementById('res-type-input').value;
@@ -3106,29 +3141,42 @@ Hãy nêu ngắn gọn:
             const link = document.getElementById('res-link-input').value.trim();
             const fileInput = document.getElementById('res-file-input');
 
+            const bucketType = type === 'Đề tài đạt giải' ? 'archive' : (type === 'Đề cương môn học' ? 'syllabi' : 'templates');
+
+            const pushAndSync = async (newItem) => {
+                if (fileInput.files && fileInput.files[0] && fileInput.files[0].size > 700 * 1024 && !link) {
+                    showToast('⚠️ File tải trực tiếp nên dưới 700KB (nếu file nặng, hãy dán Link Google Drive để không bị mất)!');
+                }
+                if (bucketType === 'archive') {
+                    window.stateArchive.unshift(newItem);
+                } else if (bucketType === 'syllabi') {
+                    window.stateSyllabi.unshift(newItem);
+                } else {
+                    window.stateTemplates.unshift(newItem);
+                }
+                if (typeof window.saveResourceItemToCloud === 'function') {
+                    await window.saveResourceItemToCloud(newItem, bucketType);
+                }
+                await saveState();
+                closeAddResourceModal();
+                renderAll();
+                showToast('Đã lưu tài liệu vĩnh viễn lên Cloud!');
+            };
+
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = async function(e) {
                     const newItem = {
                         id: 'res_' + Date.now(),
                         title,
                         type,
                         faculty,
-                        link: '',
+                        link,
                         fileName: fileInput.files[0].name,
-                        fileData: e.target.result
+                        fileData: e.target.result,
+                        updatedAt: Date.now()
                     };
-                    if (type === 'Đề tài đạt giải') {
-                        window.stateArchive.unshift(newItem);
-                    } else if (type === 'Đề cương môn học') {
-                        window.stateSyllabi.unshift(newItem);
-                    } else {
-                        window.stateTemplates.unshift(newItem);
-                    }
-                    saveState();
-                    closeAddResourceModal();
-                    renderAll();
-                    showToast('Đã thêm tài liệu và tải file lên Cloud thành công!');
+                    await pushAndSync(newItem);
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
@@ -3139,24 +3187,27 @@ Hãy nêu ngắn gọn:
                     faculty,
                     link,
                     fileName: '',
-                    fileData: ''
+                    fileData: '',
+                    updatedAt: Date.now()
                 };
-                if (type === 'Đề tài đạt giải') {
-                    window.stateArchive.unshift(newItem);
-                } else if (type === 'Đề cương môn học') {
-                    window.stateSyllabi.unshift(newItem);
-                } else {
-                    window.stateTemplates.unshift(newItem);
-                }
-                saveState();
-                closeAddResourceModal();
-                renderAll();
-                showToast('Đã thêm tài liệu thành công!');
+                await pushAndSync(newItem);
             }
         }
-        function deleteTemplate(id) { window.stateTemplates = window.stateTemplates.filter(t => t.id !== id); saveState(); renderAll(); showToast('Đã xóa biểu mẫu.'); }
-        function deleteArchive(id) { window.stateArchive = window.stateArchive.filter(a => a.id !== id); saveState(); renderAll(); showToast('Đề tài đã được xóa.'); }
-        function deleteSyllabus(id) { window.stateSyllabi = window.stateSyllabi.filter(s => s.id !== id); saveState(); renderAll(); showToast('Đã xóa đề cương môn học.'); }
+        function deleteTemplate(id) {
+            window.stateTemplates = window.stateTemplates.filter(t => t.id !== id);
+            if (typeof window.deleteResourceItemFromCloud === 'function') window.deleteResourceItemFromCloud(id);
+            saveState(); renderAll(); showToast('Đã xóa biểu mẫu.');
+        }
+        function deleteArchive(id) {
+            window.stateArchive = window.stateArchive.filter(a => a.id !== id);
+            if (typeof window.deleteResourceItemFromCloud === 'function') window.deleteResourceItemFromCloud(id);
+            saveState(); renderAll(); showToast('Đề tài đã được xóa.');
+        }
+        function deleteSyllabus(id) {
+            window.stateSyllabi = window.stateSyllabi.filter(s => s.id !== id);
+            if (typeof window.deleteResourceItemFromCloud === 'function') window.deleteResourceItemFromCloud(id);
+            saveState(); renderAll(); showToast('Đã xóa đề cương môn học.');
+        }
     </script>
 </body>
 </html>
